@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EV Master</title>
+    <style>
+:root {
+    --bg-dark: #020617; /* slate-950 */
+    --bg-card: #0f172a; /* slate-900 */
+    --border-color: #1e293b; /* slate-800 */
+    --text-light: #e2e8f0; /* slate-200 */
+    --text-muted: #64748b; /* slate-500 */
+    --accent-blue: #60a5fa; /* blue-400 */
+    --accent-emerald: #34d399; /* emerald-400 */
+    --accent-red: #f87171; /* red-400 */
+    --accent-amber: #fbbf24; /* amber-500 */
+}
+
+body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif;
+    background-color: var(--bg-dark);
+    color: var(--text-light);
+    margin: 0;
+    padding: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 100vh;
+}
+
+.container {
+    width: 100%;
+    max-width: 1024px;
+}
+
+header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+header h1 {
+    font-size: 3rem;
+    font-weight: 900;
+    background: linear-gradient(to right, var(--accent-blue), var(--accent-emerald));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin: 0;
+}
+
+header p {
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    margin-top: 0.5rem;
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+    .grid-container {
+        grid-template-columns: 5fr 7fr;
+        align-items: start;
+    }
+    header {
+        text-align: left;
+    }
+}
+
+.card {
+    background-color: #0d1425e0;
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-color);
+    border-radius: 2rem;
+    padding: 2rem;
+}
+
+.input-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.input-group label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+}
+
+.input-wrapper input[type="number"] {
+    width: 100%;
+    background-color: #1e293b80;
+    border: 1px solid #334155;
+    color: var(--text-light);
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 1.1rem;
+    transition: all 0.2s;
+}
+
+.input-wrapper input[type="number"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.5);
+    border-color: var(--accent-blue);
+}
+
+.input-wrapper span {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+input[type="range"] {
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    background-color: #334155;
+    border-radius: 3px;
+    cursor: pointer;
+    margin-top: 0.5rem;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--accent-blue);
+    border: 3px solid var(--bg-card);
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background-color: var(--accent-blue);
+     border: 3px solid var(--bg-card);
+}
+
+/* Results Card */
+.results-card {
+    text-align: center;
+}
+
+.battery-visual-container {
+    position: relative;
+    max-width: 280px;
+    margin: 0 auto 2rem;
+}
+
+#battery-box {
+    position: relative;
+    height: 8rem;
+    width: 100%;
+    border: 4px solid var(--border-color);
+    border-radius: 1rem;
+    padding: 0.5rem;
+    background-color: var(--bg-card);
+    overflow: hidden;
+}
+
+#battery-level {
+    height: 100%;
+    border-radius: 0.5rem;
+    transition: width 0.7s ease-out, background-color 0.7s ease-out;
+    background-color: var(--accent-emerald); /* Default color */
+}
+
+#battery-tip {
+    position: absolute;
+    right: -12px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 12px;
+    height: 3rem;
+    background-color: var(--border-color);
+    border-top-right-radius: 0.25rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+#battery-buffer-marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    border-left: 2px dashed var(--accent-red);
+    z-index: 10;
+    transition: left 0.5s ease;
+}
+#battery-buffer-marker span {
+    position: absolute;
+    top: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 10px;
+    color: var(--accent-red);
+    font-weight: bold;
+    text-transform: uppercase;
+}
+
+
+.battery-label {
+    margin-top: 1rem;
+}
+
+.battery-label span {
+    font-size: 2.5rem;
+    font-weight: 900;
+}
+
+.battery-label p {
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.1em;
+    margin: 0;
+}
+
+.results-display h2 {
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+}
+
+#results-content {
+    margin: 1rem 0;
+    min-height: 150px;
+}
+
+.no-results {
+    padding: 2rem 1rem;
+    background-color: #1e293b33;
+    border-radius: 1rem;
+    border: 1px dashed var(--border-color);
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.results-data .value {
+    font-size: 6rem;
+    font-weight: 900;
+    line-height: 1;
+}
+
+.results-data .unit {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    margin-left: 0.5rem;
+    font-style: italic;
+}
+
+.details-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.details-item {
+    background-color: #02061766;
+    padding: 1rem;
+    border-radius: 1rem;
+    text-align: left;
+}
+
+.details-item .label {
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 900;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+}
+
+.details-item .value {
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+.details-item .value.blue { color: var(--accent-blue); }
+.details-item .value.green { color: var(--accent-emerald); }
+
+.details-item .unit {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.details-text {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-top: 1.5rem;
+}
+
+.stats-header {
+    color: var(--text-muted);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.9rem;
+    letter-spacing: 0.05em;
+    margin-top: 3rem;
+    margin-bottom: -1rem; /* to reduce space to the grid */
+    border-top: 1px solid var(--border-color);
+    padding-top: 2rem;
+}
+
+.details-item .value.yellow { color: var(--accent-amber); }
+.details-item .value.red { color: var(--accent-red); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>EV MASTER</h1>
+            <p>Calcola l'autonomia residua reale basata sul tuo consumo attuale.</p>
+        </header>
+
+        <main class="grid-container">
+            <!-- Input Controls Card -->
+            <div class="card input-card">
+                <div class="input-group">
+                    <label for="startBattery">Batteria Iniziale</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="startBattery" value="100" min="0" max="100">
+                        <span>%</span>
+                    </div>
+                    <input type="range" id="startBatteryRange" value="100" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label for="currentBattery">Batteria Attuale</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="currentBattery" value="80" min="0" max="100">
+                        <span>%</span>
+                    </div>
+                    <input type="range" id="currentBatteryRange" value="80" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label for="kilometersTraveled">Chilometri Percorsi</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="kilometersTraveled" value="50" min="0" max="1000">
+                        <span>km</span>
+                    </div>
+                    <input type="range" id="kilometersTraveledRange" value="50" min="0" max="1000">
+                </div>
+                <div class="input-group">
+                    <label for="minBattery">Limite Minimo (Buffer)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="minBattery" value="10" min="0" max="100">
+                        <span>%</span>
+                    </div>
+                    <input type="range" id="minBatteryRange" value="10" min="0" max="100">
+                </div>
+                <div class="input-group">
+                    <label for="capacitaBatteria">CapacitÃ  Batteria</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="capacitaBatteria" value="77" min="10" max="150">
+                        <span>kWh</span>
+                    </div>
+                    <input type="range" id="capacitaBatteriaRange" value="77" min="10" max="150">
+                </div>
+                <div class="input-group">
+                    <label for="costoKwh">Costo per kWh</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="costoKwh" value="0.25" min="0.05" max="1.00" step="0.01">
+                        <span>â¬/kWh</span>
+                    </div>
+                    <input type="range" id="costoKwhRange" value="0.25" min="0.05" max="1.00" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="costoBenzina">Costo Benzina</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="costoBenzina" value="1.80" min="1.00" max="3.00" step="0.01">
+                        <span>â¬/l</span>
+                    </div>
+                    <input type="range" id="costoBenzinaRange" value="1.80" min="1.00" max="3.00" step="0.01">
+                </div>
+                <div class="input-group">
+                    <label for="consumoBenzina">Consumo Benzina</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="consumoBenzina" value="15" min="5" max="30" step="1">
+                        <span>km/l</span>
+                    </div>
+                    <input type="range" id="consumoBenzinaRange" value="15" min="5" max="30" step="1">
+                </div>
+            </div>
+
+            <!-- Results Card -->
+            <div class="card results-card">
+                <div class="battery-visual-container">
+                    <div id="battery-tip"></div>
+                    <div id="battery-box">
+                        <div id="battery-level"></div>
+                        <div id="battery-buffer-marker">
+                            <span>Buffer</span>
+                        </div>
+                    </div>
+                    <div class="battery-label">
+                        <span id="battery-percentage-label">80%</span>
+                        <p>Carica Attuale</p>
+                    </div>
+                </div>
+
+                <div class="results-display">
+                    <h2>Autonomia Residua Prevista</h2>
+                    <div id="results-content">
+                        <!-- Content will be injected by JS -->
+                    </div>
+
+                    <h3 class="stats-header">Statistiche del Viaggio e Consumi</h3>
+                    <div id="stats-grid" class="details-grid">
+                        <!-- Detailed stats will be injected here by JS -->
+                    </div>
+
+                     <p id="calculation-details" class="details-text"></p>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script>
+document.addEventListener('DOMContentLoaded', () => {
+
+    // --- DOM ELEMENTS ---
+    const inputs = {
+        startBattery: document.getElementById('startBattery'),
+        currentBattery: document.getElementById('currentBattery'),
+        kilometersTraveled: document.getElementById('kilometersTraveled'),
+        minBattery: document.getElementById('minBattery'),
+        capacitaBatteria: document.getElementById('capacitaBatteria'),
+        costoKwh: document.getElementById('costoKwh'),
+        costoBenzina: document.getElementById('costoBenzina'),
+        consumoBenzina: document.getElementById('consumoBenzina'),
+    };
+
+    const ranges = {
+        startBattery: document.getElementById('startBatteryRange'),
+        currentBattery: document.getElementById('currentBatteryRange'),
+        kilometersTraveled: document.getElementById('kilometersTraveledRange'),
+        minBattery: document.getElementById('minBatteryRange'),
+        capacitaBatteria: document.getElementById('capacitaBatteriaRange'),
+        costoKwh: document.getElementById('costoKwhRange'),
+        costoBenzina: document.getElementById('costoBenzinaRange'),
+        consumoBenzina: document.getElementById('consumoBenzinaRange'),
+    };
+
+    const battery = {
+        level: document.getElementById('battery-level'),
+        percentageLabel: document.getElementById('battery-percentage-label'),
+        bufferMarker: document.getElementById('battery-buffer-marker'),
+    };
+
+    const resultsContainer = document.getElementById('results-content');
+    const statsGrid = document.getElementById('stats-grid');
+    const calculationDetails = document.getElementById('calculation-details');
+
+    // --- STATE ---
+    // Default state values
+    const state = {
+        startBattery: 100,
+        currentBattery: 80,
+        kilometersTraveled: 50,
+        minBattery: 10,
+        capacitaBatteria: 77,
+        costoKwh: 0.25,
+        costoBenzina: 1.80,
+        consumoBenzina: 15,
+    };
+
+    // --- LOCAL STORAGE FUNCTIONS ---
+    const saveStateToLocalStorage = () => {
+        localStorage.setItem('evMasterState', JSON.stringify(state));
+    };
+
+    const loadStateFromLocalStorage = () => {
+        const savedState = localStorage.getItem('evMasterState');
+        if (savedState) {
+            const parsedState = JSON.parse(savedState);
+            // Merge saved state with default state, ensuring all properties exist
+            for (const key in state) {
+                if (parsedState[key] !== undefined) {
+                    state[key] = parsedState[key];
+                }
+            }
+        }
+    };
+
+    // Load state immediately
+    loadStateFromLocalStorage();
+
+    // --- FUNCTIONS ---
+
+    const calculateResults = () => {
+        const { startBattery, currentBattery, kilometersTraveled, minBattery, capacitaBatteria, costoKwh, costoBenzina, consumoBenzina } = state;
+
+        // Validation
+        if (startBattery <= currentBattery || kilometersTraveled <= 0 || capacitaBatteria <= 0) {
+            return null;
+        }
+
+        const usedPercentage = startBattery - currentBattery;
+        if (usedPercentage <= 0) return null;
+
+        const kmPerPercent = kilometersTraveled / usedPercentage; // km per 1%
+        const usableRemainingPercentage = Math.max(0, currentBattery - minBattery);
+        const remainingRange = usableRemainingPercentage * kmPerPercent;
+
+        const energyUsedKwh = (usedPercentage / 100) * capacitaBatteria;
+        const consumptionKwh100km = (energyUsedKwh / kilometersTraveled) * 100;
+        const efficiencyKmKwh = kilometersTraveled / energyUsedKwh;
+        const tripCost = energyUsedKwh * costoKwh;
+
+        let equivalentKm = 0;
+        if (costoBenzina > 0 && consumoBenzina > 0) {
+            const litriBenzina = tripCost / costoBenzina;
+            equivalentKm = litriBenzina * consumoBenzina;
+        }
+
+        let equivalentEfficiency = 0;
+        if (costoKwh > 0 && isFinite(efficiencyKmKwh)) {
+            equivalentEfficiency = (costoBenzina / costoKwh) * efficiencyKmKwh;
+        }
+
+        return {
+            remainingRange,
+            kmPerPercent,
+            usedPercentage,
+            consumptionKwh100km,
+            efficiencyKmKwh,
+            tripCost,
+            equivalentKm,
+            equivalentEfficiency,
+        };
+    };
+
+    const updateUI = () => {
+        // Update battery visual
+        const { currentBattery, minBattery } = state;
+        battery.level.style.width = `${currentBattery}%`;
+        
+        let color = 'var(--accent-emerald)';
+        if (currentBattery <= minBattery) {
+            color = 'var(--accent-red)';
+        } else if (currentBattery <= 20) {
+            color = 'var(--accent-amber)';
+        }
+        battery.level.style.backgroundColor = color;
+
+        battery.percentageLabel.innerText = `${currentBattery}%`;
+        battery.bufferMarker.style.left = `${minBattery}%`;
+
+        // Update results
+        const results = calculateResults();
+
+        if (results) {
+            resultsContainer.innerHTML = `
+                <div class="results-data">
+                    <span class="value">${Math.round(results.remainingRange)}</span>
+                    <span class="unit">km</span>
+                </div>
+            `;
+            
+            statsGrid.innerHTML = `
+                <div class="details-item">
+                    <p class="label">Consumo</p>
+                    <p class="value blue">${results.consumptionKwh100km.toFixed(2)} <span class="unit">kWh/100km</span></p>
+                </div>
+                <div class="details-item">
+                    <p class="label">Efficienza</p>
+                    <p class="value green">${results.efficiencyKmKwh.toFixed(2)} <span class="unit">km/kWh</span></p>
+                </div>
+                 <div class="details-item">
+                    <p class="label">Efficienza Equivalente</p>
+                    <p class="value green">${results.equivalentEfficiency.toFixed(1)} <span class="unit">km/l eq.</span></p>
+                </div>
+                <div class="details-item">
+                    <p class="label">Km per 1%</p>
+                    <p class="value yellow">${results.kmPerPercent.toFixed(2)} <span class="unit">km</span></p>
+                </div>
+                <div class="details-item">
+                    <p class="label">Costo Viaggio</p>
+                    <p class="value red">${results.tripCost.toFixed(2)} <span class="unit">â¬</span></p>
+                </div>
+                <div class="details-item">
+                    <p class="label">Km Equivalenti Benzina</p>
+                    <p class="value blue">${results.equivalentKm.toFixed(1)} <span class="unit">km</span></p>
+                </div>
+            `;
+
+            calculationDetails.innerText = `A paritÃ  di costo, con un'auto a benzina (${state.consumoBenzina} km/l) avresti percorso ${results.equivalentKm.toFixed(1)} km.`;
+        } else {
+            resultsContainer.innerHTML = `
+                <div class="no-results">
+                    <p>Inserisci i dati per visualizzare la stima dell'autonomia.</p>
+                    <p style="font-size: 0.8rem; margin-top: 0.5rem;">(Assicurati che la batteria iniziale sia superiore a quella attuale e i km > 0)</p>
+                </div>
+            `;
+            statsGrid.innerHTML = '';
+            calculationDetails.innerText = '';
+        }
+    };
+
+    // --- EVENT LISTENERS ---
+
+    // Sync number and range inputs
+    for (const key in inputs) {
+        if (!inputs[key] || !ranges[key]) continue; // Skip if element doesn't exist
+
+        const inputEl = inputs[key];
+        const rangeEl = ranges[key];
+
+        inputEl.addEventListener('input', (e) => {
+            const value = Number(e.target.value);
+            state[key] = value;
+            rangeEl.value = value;
+            updateUI();
+            saveStateToLocalStorage(); // Save state after every change
+        });
+
+        rangeEl.addEventListener('input', (e) => {
+            const value = Number(e.target.value);
+            state[key] = value;
+            inputEl.value = value;
+            updateUI();
+            saveStateToLocalStorage(); // Save state after every change
+        });
+    }
+
+    // --- INITIALIZATION ---
+    // Set initial values for ranges based on state loaded from local storage or defaults
+    for (const key in state) {
+        if (inputs[key]) {
+            inputs[key].value = state[key];
+        }
+        if (ranges[key]) {
+            ranges[key].value = state[key];
+        }
+    }
+    updateUI();
+});
+    </script>
+</body>
+</html>
