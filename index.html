@@ -95,7 +95,6 @@ header p {
     font-size: 0.8rem;
     font-weight: 700;
     color: var(--text-muted);
-    text-transform: uppercase;
 }
 
 .input-wrapper {
@@ -305,7 +304,6 @@ input[type="range"]::-moz-range-thumb {
 
 .details-item .unit {
     font-size: 0.75rem;
-    text-transform: uppercase;
     color: var(--text-muted);
 }
 
@@ -324,7 +322,7 @@ input[type="range"]::-moz-range-thumb {
     margin-top: -2rem;
     margin-bottom: -1rem; /* to reduce space to the grid */
     border-top: 1px solid var(--border-color);
-    padding-top: 2rem;
+    padding-top: 1rem;
 }
 
 .details-item .value.yellow { color: var(--accent-amber); }
@@ -389,7 +387,7 @@ input[type="range"]::-moz-range-thumb {
                     <input type="range" id="costoKwhRange" value="0.25" min="0.05" max="1.00" step="0.01">
                 </div>
                 <div class="input-group">
-                    <label for="costoBenzina">Per unit Fuel price</label>
+                    <label for="costoBenzina">Per unit fuel price</label>
                     <div class="input-wrapper">
                         <input type="number" id="costoBenzina" value="1.70" min="1.00" max="3.00" step="0.01">
                         <span>€/L</span>
@@ -397,7 +395,7 @@ input[type="range"]::-moz-range-thumb {
                     <input type="range" id="costoBenzinaRange" value="1.70" min="1.00" max="3.00" step="0.01">
                 </div>
                 <div class="input-group">
-                    <label for="consumoBenzina">Fuel consumption</label>
+                    <label for="consumoBenzina">ICE fuel consumption</label>
                     <div class="input-wrapper">
                         <input type="number" id="consumoBenzina" value="15" min="5" max="30" step="1">
                         <span>Km/L</span>
