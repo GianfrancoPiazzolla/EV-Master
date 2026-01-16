@@ -335,14 +335,13 @@ input[type="range"]::-moz-range-thumb {
     <div class="container">
         <header>
             <h1>EV MASTER</h1>
-            <!-- p>Calcola l'autonomia residua reale basata sul tuo consumo attuale.</p -->
         </header>
 
         <main class="grid-container">
             <!-- Input Controls Card -->
             <div class="card input-card">
                 <div class="input-group">
-                    <label for="startBattery">Batteria Iniziale</label>
+                    <label for="startBattery">Starting battery %</label>
                     <div class="input-wrapper">
                         <input type="number" id="startBattery" value="100" min="0" max="100">
                         <span>%</span>
@@ -350,7 +349,7 @@ input[type="range"]::-moz-range-thumb {
                     <input type="range" id="startBatteryRange" value="100" min="0" max="100">
                 </div>
                 <div class="input-group">
-                    <label for="currentBattery">Batteria Attuale</label>
+                    <label for="currentBattery">Current battery %</label>
                     <div class="input-wrapper">
                         <input type="number" id="currentBattery" value="80" min="0" max="100">
                         <span>%</span>
@@ -358,15 +357,15 @@ input[type="range"]::-moz-range-thumb {
                     <input type="range" id="currentBatteryRange" value="80" min="0" max="100">
                 </div>
                 <div class="input-group">
-                    <label for="kilometersTraveled">Chilometri Percorsi</label>
+                    <label for="kilometersTraveled">Traveled Km</label>
                     <div class="input-wrapper">
-                        <input type="number" id="kilometersTraveled" value="50" min="0" max="1000">
-                        <span>km</span>
+                        <input type="number" id="kilometersTraveled" value="50" min="0" max="500">
+                        <span>Km</span>
                     </div>
-                    <input type="range" id="kilometersTraveledRange" value="50" min="0" max="1000">
+                    <input type="range" id="kilometersTraveledRange" value="50" min="0" max="500">
                 </div>
                 <div class="input-group">
-                    <label for="minBattery">Limite Minimo (Buffer)</label>
+                    <label for="minBattery">Minimum battery % limit</label>
                     <div class="input-wrapper">
                         <input type="number" id="minBattery" value="10" min="0" max="100">
                         <span>%</span>
@@ -374,34 +373,34 @@ input[type="range"]::-moz-range-thumb {
                     <input type="range" id="minBatteryRange" value="10" min="0" max="100">
                 </div>
                 <div class="input-group">
-                    <label for="capacitaBatteria">CapacitÃ  Batteria</label>
+                    <label for="capacitaBatteria">Battery usable kWh capacity</label>
                     <div class="input-wrapper">
-                        <input type="number" id="capacitaBatteria" value="77" min="10" max="150">
+                        <input type="number" id="capacitaBatteria" value="75" min="10" max="150">
                         <span>kWh</span>
                     </div>
-                    <input type="range" id="capacitaBatteriaRange" value="77" min="10" max="150">
+                    <input type="range" id="capacitaBatteriaRange" value="75" min="10" max="150">
                 </div>
                 <div class="input-group">
-                    <label for="costoKwh">Costo per kWh</label>
+                    <label for="costoKwh">Per unit kWh price</label>
                     <div class="input-wrapper">
                         <input type="number" id="costoKwh" value="0.25" min="0.05" max="1.00" step="0.01">
-                        <span>â¬/kWh</span>
+                        <span>€/kWh</span>
                     </div>
                     <input type="range" id="costoKwhRange" value="0.25" min="0.05" max="1.00" step="0.01">
                 </div>
                 <div class="input-group">
-                    <label for="costoBenzina">Costo Benzina</label>
+                    <label for="costoBenzina">Per unit Fuel price</label>
                     <div class="input-wrapper">
-                        <input type="number" id="costoBenzina" value="1.80" min="1.00" max="3.00" step="0.01">
-                        <span>â¬/l</span>
+                        <input type="number" id="costoBenzina" value="1.70" min="1.00" max="3.00" step="0.01">
+                        <span>€/L</span>
                     </div>
-                    <input type="range" id="costoBenzinaRange" value="1.80" min="1.00" max="3.00" step="0.01">
+                    <input type="range" id="costoBenzinaRange" value="1.70" min="1.00" max="3.00" step="0.01">
                 </div>
                 <div class="input-group">
-                    <label for="consumoBenzina">Consumo Benzina</label>
+                    <label for="consumoBenzina">Fuel consumption</label>
                     <div class="input-wrapper">
                         <input type="number" id="consumoBenzina" value="15" min="5" max="30" step="1">
-                        <span>km/l</span>
+                        <span>Km/L</span>
                     </div>
                     <input type="range" id="consumoBenzinaRange" value="15" min="5" max="30" step="1">
                 </div>
@@ -419,22 +418,20 @@ input[type="range"]::-moz-range-thumb {
                     </div>
                     <div class="battery-label">
                         <span id="battery-percentage-label">80%</span>
-                        <p>Carica Attuale</p>
+                        <p>Current charge</p>
                     </div>
                 </div>
 
                 <div class="results-display">
-                    <h2>Autonomia Residua Prevista</h2>
+                    <h2>Expected residual autonomy</h2>
                     <div id="results-content">
                         <!-- Content will be injected by JS -->
                     </div>
 
-                    <h3 class="stats-header">Statistiche del Viaggio e Consumi</h3>
+                    <h3 class="stats-header">Travel and consumption Statistics</h3>
                     <div id="stats-grid" class="details-grid">
                         <!-- Detailed stats will be injected here by JS -->
                     </div>
-
-                     <p id="calculation-details" class="details-text"></p>
                 </div>
             </div>
         </main>
@@ -473,7 +470,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const resultsContainer = document.getElementById('results-content');
     const statsGrid = document.getElementById('stats-grid');
-    const calculationDetails = document.getElementById('calculation-details');
 
     // --- STATE ---
     // Default state values
@@ -583,41 +579,38 @@ document.addEventListener('DOMContentLoaded', () => {
             
             statsGrid.innerHTML = `
                 <div class="details-item">
-                    <p class="label">Consumo</p>
+                    <p class="label">Consumption</p>
                     <p class="value blue">${results.consumptionKwh100km.toFixed(2)} <span class="unit">kWh/100km</span></p>
                 </div>
                 <div class="details-item">
-                    <p class="label">Efficienza</p>
-                    <p class="value green">${results.efficiencyKmKwh.toFixed(2)} <span class="unit">km/kWh</span></p>
+                    <p class="label">BEV efficency</p>
+                    <p class="value green">${results.efficiencyKmKwh.toFixed(2)} <span class="unit">Km/kWh</span></p>
                 </div>
                  <div class="details-item">
-                    <p class="label">Efficienza Equivalente</p>
-                    <p class="value green">${results.equivalentEfficiency.toFixed(1)} <span class="unit">km/l eq.</span></p>
+                    <p class="label">Equvalent ICE efficency</p>
+                    <p class="value green">${results.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p>
+                </div>
+                <div class="details-item">
+                    <p class="label">Equivalent ICE Range</p>
+                    <p class="value blue">${results.equivalentKm.toFixed(1)} <span class="unit">Km</span></p>
                 </div>
                 <div class="details-item">
                     <p class="label">Km per 1%</p>
-                    <p class="value yellow">${results.kmPerPercent.toFixed(2)} <span class="unit">km</span></p>
+                    <p class="value yellow">${results.kmPerPercent.toFixed(2)} <span class="unit">Km</span></p>
                 </div>
                 <div class="details-item">
-                    <p class="label">Costo Viaggio</p>
-                    <p class="value red">${results.tripCost.toFixed(2)} <span class="unit">â¬</span></p>
-                </div>
-                <div class="details-item">
-                    <p class="label">Km Equivalenti Benzina</p>
-                    <p class="value blue">${results.equivalentKm.toFixed(1)} <span class="unit">km</span></p>
+                    <p class="label">Current travel cost</p>
+                    <p class="value red">${results.tripCost.toFixed(2)} <span class="unit">€</span></p>
                 </div>
             `;
-
-            <!-- calculationDetails.innerText = `A paritÃ  di costo, con un'auto a benzina (${state.consumoBenzina} km/l) avresti percorso ${results.equivalentKm.toFixed(1)} km.`; />
         } else {
             resultsContainer.innerHTML = `
                 <div class="no-results">
-                    <p>Inserisci i dati per visualizzare la stima dell'autonomia.</p>
-                    <p style="font-size: 0.8rem; margin-top: 0.5rem;">(Assicurati che la batteria iniziale sia superiore a quella attuale e i km > 0)</p>
+                    <p>Enter your data to view your statistics.</p>
+                    <p style="font-size: 0.8rem; margin-top: 0.5rem;">(Make sure the initial battery is higher than the current one and the Km > 0)</p>
                 </div>
             `;
             statsGrid.innerHTML = '';
-            calculationDetails.innerText = '';
         }
     };
 
@@ -662,5 +655,3 @@ document.addEventListener('DOMContentLoaded', () => {
     </script>
 </body>
 </html>
-
-
