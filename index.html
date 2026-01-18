@@ -78,6 +78,7 @@ header h1 {
     border: 1px solid var(--border-color);
     border-radius: 2rem;
     padding: 2rem;
+    margin-bottom: 2rem;
 }
 
 .input-card {
@@ -307,37 +308,42 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 /* Calculator Styles */
-.calculator-container {
-    margin-top: 2rem;
-    padding-top: 2rem;
-    border-top: 1px solid var(--border-color);
-    text-align: left;
+.calculator-section {
+    grid-column: 1 / -1;
+}
+
+.calc-container {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 2rem;
+}
+
+@media (max-width: 768px) {
+    .calc-container {
+        grid-template-columns: 1fr;
+    }
 }
 
 .calc-display {
-    background-color: #1e293b80;
-    border: 1px solid #334155;
-    border-radius: 0.75rem;
+    background: #1e293b80;
     padding: 1rem;
-    margin-bottom: 1rem;
+    border-radius: 0.75rem;
     text-align: right;
-    min-height: 3.5rem;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
 }
 
-#calc-prev {
-    font-size: 0.8rem;
+.calc-display .operation {
+    font-size: 0.9rem;
     color: var(--text-muted);
-    min-height: 1rem;
+    min-height: 1.2rem;
 }
 
-#calc-curr {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--accent-blue);
-    word-wrap: break-word;
+.calc-display .current {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--text-light);
+    overflow: hidden;
 }
 
 .calc-buttons {
@@ -346,36 +352,61 @@ input[type="range"]::-webkit-slider-thumb {
     gap: 0.5rem;
 }
 
-.calc-btn {
-    padding: 1rem 0.5rem;
-    border: 1px solid var(--border-color);
+.btn {
+    padding: 1.2rem;
     border-radius: 0.75rem;
-    background-color: #1e293b44;
+    border: 1px solid var(--border-color);
+    background: var(--bg-card);
     color: var(--text-light);
+    font-size: 1.2rem;
     font-weight: 700;
     cursor: pointer;
-    transition: all 0.1s;
+    transition: all 0.2s;
 }
 
-.calc-btn:hover {
-    background-color: #1e293b;
-    border-color: var(--accent-blue);
+.btn:hover { background: #1e293b; }
+.btn:active { transform: scale(0.95); }
+.btn-accent { background: var(--accent-blue); color: var(--bg-dark); }
+.btn-accent:hover { background: #93c5fd; }
+.btn-op { color: var(--accent-amber); }
+
+.tape-container {
+    background: #02061780;
+    border-radius: 1rem;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    max-height: 350px;
+    display: flex;
+    flex-direction: column;
 }
 
-.calc-btn.operator {
-    color: var(--accent-blue);
-    background-color: #1e293b66;
+.tape-title {
+    font-size: 0.8rem;
+    font-weight: 900;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 0.5rem;
 }
 
-.calc-btn.equals {
-    background-color: var(--accent-blue);
-    color: var(--bg-dark);
-    grid-column: span 2;
+#calc-tape {
+    overflow-y: auto;
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.75rem;
 }
 
-.calc-btn.clear {
-    color: var(--accent-red);
+.tape-entry {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 0.9rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #1e293b44;
 }
+
+.tape-entry .expr { color: var(--text-muted); }
+.tape-entry .res { color: var(--accent-emerald); font-weight: bold; font-size: 1.1rem; }
 
     </style>
 </head>
@@ -473,36 +504,45 @@ input[type="range"]::-webkit-slider-thumb {
 
                     <h3 class="stats-header">Travel and consumption Statistics</h3>
                     <div id="stats-grid" class="details-grid"></div>
+                </div>
+            </div>
 
-                    <div class="calculator-container">
-                        <h3 class="stats-header" style="border:none; padding:0; margin-bottom:1rem;">Quick Calculator</h3>
+            <div class="card calculator-section">
+                <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Quick calculator</h3>
+                <div class="calc-container">
+                    <div class="calc-main">
                         <div class="calc-display">
-                            <div id="calc-prev"></div>
-                            <div id="calc-curr">0</div>
+                            <div class="operation" id="calc-op"></div>
+                            <div class="current" id="calc-current">0</div>
                         </div>
                         <div class="calc-buttons">
-                            <button class="calc-btn clear" onclick="clearCalc()">C</button>
-                            <button class="calc-btn operator" onclick="chooseOperator('/')">÷</button>
-                            <button class="calc-btn operator" onclick="chooseOperator('*')">×</button>
-                            <button class="calc-btn operator" onclick="deleteLast()">DEL</button>
+                            <button class="btn btn-op" onclick="calcAction('C')">C</button>
+                            <button class="btn btn-op" onclick="calcAction('DEL')">←</button>
+                            <button class="btn btn-op" onclick="calcAction('/')">÷</button>
+                            <button class="btn btn-op" onclick="calcAction('*')">×</button>
                             
-                            <button class="calc-btn" onclick="appendNumber('7')">7</button>
-                            <button class="calc-btn" onclick="appendNumber('8')">8</button>
-                            <button class="calc-btn" onclick="appendNumber('9')">9</button>
-                            <button class="calc-btn operator" onclick="chooseOperator('-')">−</button>
+                            <button class="btn" onclick="calcAction('7')">7</button>
+                            <button class="btn" onclick="calcAction('8')">8</button>
+                            <button class="btn" onclick="calcAction('9')">9</button>
+                            <button class="btn btn-op" onclick="calcAction('-')">-</button>
                             
-                            <button class="calc-btn" onclick="appendNumber('4')">4</button>
-                            <button class="calc-btn" onclick="appendNumber('5')">5</button>
-                            <button class="calc-btn" onclick="appendNumber('6')">6</button>
-                            <button class="calc-btn operator" onclick="chooseOperator('+')">+</button>
+                            <button class="btn" onclick="calcAction('4')">4</button>
+                            <button class="btn" onclick="calcAction('5')">5</button>
+                            <button class="btn" onclick="calcAction('6')">6</button>
+                            <button class="btn btn-op" onclick="calcAction('+')">+</button>
                             
-                            <button class="calc-btn" onclick="appendNumber('1')">1</button>
-                            <button class="calc-btn" onclick="appendNumber('2')">2</button>
-                            <button class="calc-btn" onclick="appendNumber('3')">3</button>
-                            <button class="calc-btn" onclick="appendNumber('.')">.</button>
+                            <button class="btn" onclick="calcAction('1')">1</button>
+                            <button class="btn" onclick="calcAction('2')">2</button>
+                            <button class="btn" onclick="calcAction('3')">3</button>
+                            <button class="btn btn-accent" style="grid-row: span 2;" onclick="calcAction('=')">=</button>
                             
-                            <button class="calc-btn" onclick="appendNumber('0')">0</button>
-                            <button class="calc-btn equals" onclick="compute()">=</button>
+                            <button class="btn" style="grid-column: span 2;" onclick="calcAction('0')">0</button>
+                            <button class="btn" onclick="calcAction('.')">.</button>
+                        </div>
+                    </div>
+                    <div class="tape-container">
+                        <div class="tape-title">Computation chronology</div>
+                        <div id="calc-tape">
                         </div>
                     </div>
                 </div>
@@ -511,7 +551,6 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
 
     <script>
-    // --- APP LOGIC ---
 	document.addEventListener('DOMContentLoaded', () => {
 
     const inputs = {
@@ -574,7 +613,7 @@ input[type="range"]::-webkit-slider-thumb {
         const remainingRange = usableRemainingPercentage * kmPerPercent;
 
         const energyUsedKwh = (usedPercentage / 100) * capacitaBatteria;
-        const energyAtMinBuffer = (minBattery / 100) * capacitaBatteria; 
+        const energyAtMinBuffer = (minBattery / 100) * capacitaBatteria;
         const tripCost = energyUsedKwh * costoKwh;
         const costPerKm = tripCost / kilometersTraveled;
 
@@ -695,64 +734,77 @@ input[type="range"]::-webkit-slider-thumb {
     updateUI();
 });
 
-// --- CALCULATOR LOGIC ---
-let currentOperand = '0';
-let previousOperand = '';
-let operation = undefined;
+// Calculator Logic
+let currentInput = '0';
+let prevInput = '';
+let operation = null;
+let shouldResetScreen = false;
 
-function updateCalcDisplay() {
-    document.getElementById('calc-curr').innerText = currentOperand;
-    document.getElementById('calc-prev').innerText = previousOperand + (operation || '');
-}
+function calcAction(val) {
+    const currentDisplay = document.getElementById('calc-current');
+    const opDisplay = document.getElementById('calc-op');
+    const tape = document.getElementById('calc-tape');
 
-function appendNumber(number) {
-    if (number === '.' && currentOperand.includes('.')) return;
-    if (currentOperand === '0' && number !== '.') {
-        currentOperand = number.toString();
-    } else {
-        currentOperand = currentOperand.toString() + number.toString();
+    if (val >= '0' && val <= '9' || val === '.') {
+        if (shouldResetScreen || currentInput === '0') {
+            currentInput = val === '.' ? '0.' : val;
+            shouldResetScreen = false;
+        } else {
+            if (val === '.' && currentInput.includes('.')) return;
+            currentInput += val;
+        }
+    } else if (val === 'C') {
+        currentInput = '0';
+        prevInput = '';
+        operation = null;
+        opDisplay.innerText = '';
+    } else if (val === 'DEL') {
+        currentInput = currentInput.slice(0, -1) || '0';
+    } else if (['+', '-', '*', '/'].includes(val)) {
+        if (operation !== null) performCalculation();
+        prevInput = currentInput;
+        operation = val;
+        opDisplay.innerText = `${prevInput} ${val}`;
+        shouldResetScreen = true;
+    } else if (val === '=') {
+        if (operation === null || shouldResetScreen) return;
+        const expression = `${prevInput} ${operation} ${currentInput}`;
+        performCalculation();
+        
+        // Aggiunta al nastro
+        if (tape.innerText.includes('Nessun calcolo')) tape.innerHTML = '';
+        const entry = document.createElement('div');
+        entry.className = 'tape-entry';
+        entry.innerHTML = `<div class="expr">${expression} =</div><div class="res">${currentInput}</div>`;
+        tape.prepend(entry);
+        
+        operation = null;
+        opDisplay.innerText = '';
     }
-    updateCalcDisplay();
+    currentDisplay.innerText = currentInput;
 }
 
-function chooseOperator(op) {
-    if (currentOperand === '') return;
-    if (previousOperand !== '') compute();
-    operation = op;
-    previousOperand = currentOperand;
-    currentOperand = '';
-    updateCalcDisplay();
-}
-
-function compute() {
-    let computation;
-    const prev = parseFloat(previousOperand);
-    const current = parseFloat(currentOperand);
+function performCalculation() {
+    let result;
+    const prev = parseFloat(prevInput);
+    const current = parseFloat(currentInput);
     if (isNaN(prev) || isNaN(current)) return;
+
     switch (operation) {
-        case '+': computation = prev + current; break;
-        case '-': computation = prev - current; break;
-        case '*': computation = prev * current; break;
-        case '/': computation = prev / current; break;
+        case '+': result = prev + current; break;
+        case '-': result = prev - current; break;
+        case '*': result = prev * current; break;
+        case '/': result = current === 0 ? 'Error' : prev / current; break;
         default: return;
     }
-    currentOperand = computation.toString();
-    operation = undefined;
-    previousOperand = '';
-    updateCalcDisplay();
-}
-
-function clearCalc() {
-    currentOperand = '0';
-    previousOperand = '';
-    operation = undefined;
-    updateCalcDisplay();
-}
-
-function deleteLast() {
-    currentOperand = currentOperand.toString().slice(0, -1);
-    if (currentOperand === '') currentOperand = '0';
-    updateCalcDisplay();
+    
+    // Arrotondamento alla seconda cifra decimale
+    if (typeof result === 'number') {
+        result = Math.round((result + Number.EPSILON) * 100) / 100;
+    }
+    
+    currentInput = result.toString();
+    shouldResetScreen = true;
 }
     </script>
 	<script>
