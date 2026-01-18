@@ -305,6 +305,78 @@ input[type="range"]::-webkit-slider-thumb {
     border: 1px dashed var(--border-color);
     color: var(--text-muted);
 }
+
+/* Calculator Styles */
+.calculator-container {
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.calc-display {
+    background-color: #1e293b80;
+    border: 1px solid #334155;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    text-align: right;
+    min-height: 3.5rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+#calc-prev {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    min-height: 1rem;
+}
+
+#calc-curr {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--accent-blue);
+    word-wrap: break-word;
+}
+
+.calc-buttons {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+}
+
+.calc-btn {
+    padding: 1rem 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    background-color: #1e293b44;
+    color: var(--text-light);
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.calc-btn:hover {
+    background-color: #1e293b;
+    border-color: var(--accent-blue);
+}
+
+.calc-btn.operator {
+    color: var(--accent-blue);
+    background-color: #1e293b66;
+}
+
+.calc-btn.equals {
+    background-color: var(--accent-blue);
+    color: var(--bg-dark);
+    grid-column: span 2;
+}
+
+.calc-btn.clear {
+    color: var(--accent-red);
+}
+
     </style>
 </head>
 <body>
@@ -401,12 +473,45 @@ input[type="range"]::-webkit-slider-thumb {
 
                     <h3 class="stats-header">Travel and consumption Statistics</h3>
                     <div id="stats-grid" class="details-grid"></div>
+
+                    <div class="calculator-container">
+                        <h3 class="stats-header" style="border:none; padding:0; margin-bottom:1rem;">Quick Calculator</h3>
+                        <div class="calc-display">
+                            <div id="calc-prev"></div>
+                            <div id="calc-curr">0</div>
+                        </div>
+                        <div class="calc-buttons">
+                            <button class="calc-btn clear" onclick="clearCalc()">C</button>
+                            <button class="calc-btn operator" onclick="chooseOperator('/')">÷</button>
+                            <button class="calc-btn operator" onclick="chooseOperator('*')">×</button>
+                            <button class="calc-btn operator" onclick="deleteLast()">DEL</button>
+                            
+                            <button class="calc-btn" onclick="appendNumber('7')">7</button>
+                            <button class="calc-btn" onclick="appendNumber('8')">8</button>
+                            <button class="calc-btn" onclick="appendNumber('9')">9</button>
+                            <button class="calc-btn operator" onclick="chooseOperator('-')">−</button>
+                            
+                            <button class="calc-btn" onclick="appendNumber('4')">4</button>
+                            <button class="calc-btn" onclick="appendNumber('5')">5</button>
+                            <button class="calc-btn" onclick="appendNumber('6')">6</button>
+                            <button class="calc-btn operator" onclick="chooseOperator('+')">+</button>
+                            
+                            <button class="calc-btn" onclick="appendNumber('1')">1</button>
+                            <button class="calc-btn" onclick="appendNumber('2')">2</button>
+                            <button class="calc-btn" onclick="appendNumber('3')">3</button>
+                            <button class="calc-btn" onclick="appendNumber('.')">.</button>
+                            
+                            <button class="calc-btn" onclick="appendNumber('0')">0</button>
+                            <button class="calc-btn equals" onclick="compute()">=</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
+    // --- APP LOGIC ---
 	document.addEventListener('DOMContentLoaded', () => {
 
     const inputs = {
@@ -469,14 +574,13 @@ input[type="range"]::-webkit-slider-thumb {
         const remainingRange = usableRemainingPercentage * kmPerPercent;
 
         const energyUsedKwh = (usedPercentage / 100) * capacitaBatteria;
-        const energyAtMinBuffer = (minBattery / 100) * capacitaBatteria; // kWh residui alla soglia minima
+        const energyAtMinBuffer = (minBattery / 100) * capacitaBatteria; 
         const tripCost = energyUsedKwh * costoKwh;
         const costPerKm = tripCost / kilometersTraveled;
 
         const consumptionKwh100km = (energyUsedKwh / kilometersTraveled) * 100;
         const efficiencyKmKwh = kilometersTraveled / energyUsedKwh;
 
-        // Calcolo Km percorsi da una ICE con la stessa spesa
         let iceEquivalentKm = 0;
         if (costoBenzina > 0 && consumoBenzina > 0) {
             const litersBoughtWithTripCost = tripCost / costoBenzina;
@@ -494,10 +598,10 @@ input[type="range"]::-webkit-slider-thumb {
             consumptionKwh100km,
             efficiencyKmKwh,
             tripCost,
-            iceEquivalentKm,      // Km percorsi da ICE con stessa spesa
+            iceEquivalentKm,
             equivalentEfficiency,
             energyUsedKwh,
-            energyAtMinBuffer,    // Aggiunto ai risultati
+            energyAtMinBuffer,
             costPerKm
         };
     };
@@ -590,6 +694,66 @@ input[type="range"]::-webkit-slider-thumb {
     });
     updateUI();
 });
+
+// --- CALCULATOR LOGIC ---
+let currentOperand = '0';
+let previousOperand = '';
+let operation = undefined;
+
+function updateCalcDisplay() {
+    document.getElementById('calc-curr').innerText = currentOperand;
+    document.getElementById('calc-prev').innerText = previousOperand + (operation || '');
+}
+
+function appendNumber(number) {
+    if (number === '.' && currentOperand.includes('.')) return;
+    if (currentOperand === '0' && number !== '.') {
+        currentOperand = number.toString();
+    } else {
+        currentOperand = currentOperand.toString() + number.toString();
+    }
+    updateCalcDisplay();
+}
+
+function chooseOperator(op) {
+    if (currentOperand === '') return;
+    if (previousOperand !== '') compute();
+    operation = op;
+    previousOperand = currentOperand;
+    currentOperand = '';
+    updateCalcDisplay();
+}
+
+function compute() {
+    let computation;
+    const prev = parseFloat(previousOperand);
+    const current = parseFloat(currentOperand);
+    if (isNaN(prev) || isNaN(current)) return;
+    switch (operation) {
+        case '+': computation = prev + current; break;
+        case '-': computation = prev - current; break;
+        case '*': computation = prev * current; break;
+        case '/': computation = prev / current; break;
+        default: return;
+    }
+    currentOperand = computation.toString();
+    operation = undefined;
+    previousOperand = '';
+    updateCalcDisplay();
+}
+
+function clearCalc() {
+    currentOperand = '0';
+    previousOperand = '';
+    operation = undefined;
+    updateCalcDisplay();
+}
+
+function deleteLast() {
+    currentOperand = currentOperand.toString().slice(0, -1);
+    if (currentOperand === '') currentOperand = '0';
+    updateCalcDisplay();
+}
     </script>
 	<script>
       if ('serviceWorker' in navigator) {
