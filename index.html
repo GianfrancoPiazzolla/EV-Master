@@ -5,7 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="theme-color" content="#000000"/>
     <link rel="icon" href="favicon.ico" type="image/x-icon">
-    <link rel="manifest" href="manifest.json">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="EV Master">
+	<link rel="apple-touch-icon" href="icon-192x192.png">
+	<link rel="manifest" href="manifest.json">
     <title>EV Master</title>
     <style>
 :root {
@@ -50,12 +54,6 @@ header h1 {
     background-clip: text;
     color: transparent;
     margin: 0;
-}
-
-header p {
-    color: var(--text-muted);
-    font-size: 1.1rem;
-    margin-top: 0.5rem;
 }
 
 .grid-container {
@@ -152,15 +150,6 @@ input[type="range"]::-webkit-slider-thumb {
     border: 3px solid var(--bg-card);
 }
 
-input[type="range"]::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background-color: var(--accent-blue);
-     border: 3px solid var(--bg-card);
-}
-
-/* Results Card */
 .results-card {
     text-align: center;
 }
@@ -186,7 +175,7 @@ input[type="range"]::-moz-range-thumb {
     height: 100%;
     border-radius: 0.5rem;
     transition: width 0.7s ease-out, background-color 0.7s ease-out;
-    background-color: var(--accent-emerald); /* Default color */
+    background-color: var(--accent-emerald);
 }
 
 #battery-tip {
@@ -201,29 +190,29 @@ input[type="range"]::-moz-range-thumb {
     border-bottom-right-radius: 0.25rem;
 }
 
-#battery-buffer-marker {
+#battery-buffer-marker, #battery-start-marker {
     position: absolute;
     top: 0;
     bottom: 0;
-    border-left: 2px dashed var(--accent-red);
     z-index: 10;
     transition: left 0.5s ease;
 }
-#battery-buffer-marker span {
+
+#battery-buffer-marker { border-left: 2px dashed var(--accent-red); }
+#battery-start-marker { border-left: 2px dashed var(--accent-blue); }
+
+#battery-buffer-marker span, #battery-start-marker span {
     position: absolute;
-    top: -20px;
     left: 50%;
     transform: translateX(-50%);
     font-size: 10px;
-    color: var(--accent-red);
     font-weight: bold;
     text-transform: uppercase;
+    white-space: nowrap;
 }
 
-
-.battery-label {
-    margin-top: 1rem;
-}
+#battery-buffer-marker span { top: -20px; color: var(--accent-red); }
+#battery-start-marker span { bottom: -20px; color: var(--accent-blue); }
 
 .battery-label span {
     font-size: 2.5rem;
@@ -244,20 +233,6 @@ input[type="range"]::-moz-range-thumb {
     text-transform: uppercase;
     font-size: 0.9rem;
     letter-spacing: 0.05em;
-}
-
-#results-content {
-    margin: 1rem 0;
-    min-height: 150px;
-}
-
-.no-results {
-    padding: 2rem 1rem;
-    background-color: #1e293b33;
-    border-radius: 1rem;
-    border: 1px dashed var(--border-color);
-    color: var(--text-muted);
-    font-style: italic;
 }
 
 .results-data .value {
@@ -302,18 +277,10 @@ input[type="range"]::-moz-range-thumb {
     font-size: 1.25rem;
     font-weight: 700;
 }
-.details-item .value.blue { color: var(--accent-blue); }
-.details-item .value.green { color: var(--accent-emerald); }
 
 .details-item .unit {
     font-size: 0.75rem;
     color: var(--text-muted);
-}
-
-.details-text {
-    font-size: 0.9rem;
-    color: var(--text-muted);
-    margin-top: 1.5rem;
 }
 
 .stats-header {
@@ -322,14 +289,22 @@ input[type="range"]::-moz-range-thumb {
     text-transform: uppercase;
     font-size: 0.9rem;
     letter-spacing: 0.05em;
-    margin-top: -2rem;
-    margin-bottom: -1rem; /* to reduce space to the grid */
     border-top: 1px solid var(--border-color);
-    padding-top: 1rem;
+    padding-top: 2rem;
 }
 
-.details-item .value.yellow { color: var(--accent-amber); }
-.details-item .value.red { color: var(--accent-red); }
+.value.blue { color: var(--accent-blue); }
+.value.green { color: var(--accent-emerald); }
+.value.yellow { color: var(--accent-amber); }
+.value.red { color: var(--accent-red); }
+
+.no-results {
+    padding: 2rem 1rem;
+    background-color: #1e293b33;
+    border-radius: 1rem;
+    border: 1px dashed var(--border-color);
+    color: var(--text-muted);
+}
     </style>
 </head>
 <body>
@@ -339,7 +314,6 @@ input[type="range"]::-moz-range-thumb {
         </header>
 
         <main class="grid-container">
-            <!-- Input Controls Card -->
             <div class="card input-card">
                 <div class="input-group">
                     <label for="startBattery">Starting battery %</label>
@@ -384,10 +358,10 @@ input[type="range"]::-moz-range-thumb {
                 <div class="input-group">
                     <label for="costoKwh">Per unit kWh price</label>
                     <div class="input-wrapper">
-                        <input type="number" id="costoKwh" value="0.25" min="0.05" max="1.00" step="0.01">
+                        <input type="number" id="costoKwh" value="0.25" min="0.01" max="1.50" step="0.01">
                         <span>€/kWh</span>
                     </div>
-                    <input type="range" id="costoKwhRange" value="0.25" min="0.05" max="1.00" step="0.01">
+                    <input type="range" id="costoKwhRange" value="0.25" min="0.01" max="1.50" step="0.01">
                 </div>
                 <div class="input-group">
                     <label for="costoBenzina">Per unit fuel price</label>
@@ -400,22 +374,20 @@ input[type="range"]::-moz-range-thumb {
                 <div class="input-group">
                     <label for="consumoBenzina">ICE fuel consumption</label>
                     <div class="input-wrapper">
-                        <input type="number" id="consumoBenzina" value="15" min="5" max="30" step="1">
+                        <input type="number" id="consumoBenzina" value="15" min="5" max="40" step="0.5">
                         <span>Km/L</span>
                     </div>
-                    <input type="range" id="consumoBenzinaRange" value="15" min="5" max="30" step="1">
+                    <input type="range" id="consumoBenzinaRange" value="15" min="5" max="40" step="0.5">
                 </div>
             </div>
 
-            <!-- Results Card -->
             <div class="card results-card">
                 <div class="battery-visual-container">
                     <div id="battery-tip"></div>
                     <div id="battery-box">
                         <div id="battery-level"></div>
-                        <div id="battery-buffer-marker">
-                            <span>Buffer</span>
-                        </div>
+                        <div id="battery-buffer-marker"><span>Buffer</span></div>
+                        <div id="battery-start-marker"><span>Start</span></div>
                     </div>
                     <div class="battery-label">
                         <span id="battery-percentage-label">80%</span>
@@ -425,22 +397,18 @@ input[type="range"]::-moz-range-thumb {
 
                 <div class="results-display">
                     <h2>Expected residual autonomy</h2>
-                    <div id="results-content">
-                        <!-- Content will be injected by JS -->
-                    </div>
+                    <div id="results-content"></div>
 
                     <h3 class="stats-header">Travel and consumption Statistics</h3>
-                    <div id="stats-grid" class="details-grid">
-                        <!-- Detailed stats will be injected here by JS -->
-                    </div>
+                    <div id="stats-grid" class="details-grid"></div>
                 </div>
             </div>
         </main>
     </div>
-    <script>
-document.addEventListener('DOMContentLoaded', () => {
 
-    // --- DOM ELEMENTS ---
+    <script>
+	document.addEventListener('DOMContentLoaded', () => {
+
     const inputs = {
         startBattery: document.getElementById('startBattery'),
         currentBattery: document.getElementById('currentBattery'),
@@ -467,71 +435,52 @@ document.addEventListener('DOMContentLoaded', () => {
         level: document.getElementById('battery-level'),
         percentageLabel: document.getElementById('battery-percentage-label'),
         bufferMarker: document.getElementById('battery-buffer-marker'),
+        startMarker: document.getElementById('battery-start-marker'),
     };
 
     const resultsContainer = document.getElementById('results-content');
     const statsGrid = document.getElementById('stats-grid');
 
-    // --- STATE ---
-    // Default state values
     const state = {
-        startBattery: 80,
-        currentBattery: 50,
-        kilometersTraveled: 120,
-        minBattery: 20,
+        startBattery: 100,
+        currentBattery: 80,
+        kilometersTraveled: 50,
+        minBattery: 10,
         capacitaBatteria: 75,
         costoKwh: 0.25,
         costoBenzina: 1.70,
         consumoBenzina: 15,
     };
 
-    // --- LOCAL STORAGE FUNCTIONS ---
-    const saveStateToLocalStorage = () => {
-        localStorage.setItem('evMasterState', JSON.stringify(state));
+    const saveState = () => localStorage.setItem('evMasterState', JSON.stringify(state));
+    const loadState = () => {
+        const saved = localStorage.getItem('evMasterState');
+        if (saved) Object.assign(state, JSON.parse(saved));
     };
-
-    const loadStateFromLocalStorage = () => {
-        const savedState = localStorage.getItem('evMasterState');
-        if (savedState) {
-            const parsedState = JSON.parse(savedState);
-            // Merge saved state with default state, ensuring all properties exist
-            for (const key in state) {
-                if (parsedState[key] !== undefined) {
-                    state[key] = parsedState[key];
-                }
-            }
-        }
-    };
-
-    // Load state immediately
-    loadStateFromLocalStorage();
-
-    // --- FUNCTIONS ---
 
     const calculateResults = () => {
         const { startBattery, currentBattery, kilometersTraveled, minBattery, capacitaBatteria, costoKwh, costoBenzina, consumoBenzina } = state;
 
-        // Validation
-        if (startBattery <= currentBattery || kilometersTraveled <= 0 || capacitaBatteria <= 0) {
-            return null;
-        }
+        if (startBattery <= currentBattery || kilometersTraveled <= 0 || capacitaBatteria <= 0) return null;
 
         const usedPercentage = startBattery - currentBattery;
-        if (usedPercentage <= 0) return null;
-
-        const kmPerPercent = kilometersTraveled / usedPercentage; // km per 1%
+        const kmPerPercent = kilometersTraveled / usedPercentage;
         const usableRemainingPercentage = Math.max(0, currentBattery - minBattery);
         const remainingRange = usableRemainingPercentage * kmPerPercent;
 
         const energyUsedKwh = (usedPercentage / 100) * capacitaBatteria;
+        const energyAtMinBuffer = (minBattery / 100) * capacitaBatteria; // kWh residui alla soglia minima
+        const tripCost = energyUsedKwh * costoKwh;
+        const costPerKm = tripCost / kilometersTraveled;
+
         const consumptionKwh100km = (energyUsedKwh / kilometersTraveled) * 100;
         const efficiencyKmKwh = kilometersTraveled / energyUsedKwh;
-        const tripCost = energyUsedKwh * costoKwh;
 
-        let equivalentKm = 0;
+        // Calcolo Km percorsi da una ICE con la stessa spesa
+        let iceEquivalentKm = 0;
         if (costoBenzina > 0 && consumoBenzina > 0) {
-            const litriBenzina = tripCost / costoBenzina;
-            equivalentKm = litriBenzina * consumoBenzina;
+            const litersBoughtWithTripCost = tripCost / costoBenzina;
+            iceEquivalentKm = litersBoughtWithTripCost * consumoBenzina;
         }
 
         let equivalentEfficiency = 0;
@@ -542,119 +491,107 @@ document.addEventListener('DOMContentLoaded', () => {
         return {
             remainingRange,
             kmPerPercent,
-            usedPercentage,
             consumptionKwh100km,
             efficiencyKmKwh,
             tripCost,
-            equivalentKm,
+            iceEquivalentKm,      // Km percorsi da ICE con stessa spesa
             equivalentEfficiency,
+            energyUsedKwh,
+            energyAtMinBuffer,    // Aggiunto ai risultati
+            costPerKm
         };
     };
 
     const updateUI = () => {
-        // Update battery visual
-        const { currentBattery, minBattery } = state;
+        const { currentBattery, minBattery, startBattery } = state;
         battery.level.style.width = `${currentBattery}%`;
         
         let color = 'var(--accent-emerald)';
-        if (currentBattery <= minBattery) {
-            color = 'var(--accent-red)';
-        } else if (currentBattery <= 20) {
-            color = 'var(--accent-amber)';
-        }
+        if (currentBattery <= minBattery) color = 'var(--accent-red)';
+        else if (currentBattery <= 20) color = 'var(--accent-amber)';
+        
         battery.level.style.backgroundColor = color;
-
         battery.percentageLabel.innerText = `${currentBattery}%`;
         battery.bufferMarker.style.left = `${minBattery}%`;
+        battery.startMarker.style.left = `${startBattery}%`;
 
-        // Update results
-        const results = calculateResults();
+        const res = calculateResults();
 
-        if (results) {
+        if (res) {
             resultsContainer.innerHTML = `
                 <div class="results-data">
-                    <span class="value">${Math.round(results.remainingRange)}</span>
-                    <span class="unit">km</span>
-                </div>
-            `;
+                    <span class="value">${Math.round(res.remainingRange)}</span>
+                    <span class="unit">Km</span>
+                </div>`;
             
             statsGrid.innerHTML = `
                 <div class="details-item">
-                    <p class="label">Consumption</p>
-                    <p class="value blue">${results.consumptionKwh100km.toFixed(2)} <span class="unit">kWh/100km</span></p>
+                    <p class="label">Drive consumption</p>
+                    <p class="value red">${res.consumptionKwh100km.toFixed(2)} <span class="unit">kWh/100Km</span></p>
+                </div>
+                <div class="details-item">
+                    <p class="label">kWh Consumed</p>
+                    <p class="value red">${res.energyUsedKwh.toFixed(2)} <span class="unit">kWh</span></p>
+                </div>
+                <div class="details-item">
+                    <p class="label">Residual kWh at minimum %</p>
+                    <p class="value green">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p>
                 </div>
                 <div class="details-item">
                     <p class="label">BEV efficiency</p>
-                    <p class="value green">${results.efficiencyKmKwh.toFixed(2)} <span class="unit">Km/kWh</span></p>
+                    <p class="value blue">${res.efficiencyKmKwh.toFixed(2)} <span class="unit">Km/kWh</span></p>
+                </div>
+                <div class="details-item">
+                    <p class="label">Drive cost</p>
+                    <p class="value yellow">${res.tripCost.toFixed(2)} <span class="unit">€</span></p>
+                </div>
+                <div class="details-item">
+                    <p class="label">Drive cost per Km</p>
+                    <p class="value yellow">${res.costPerKm.toFixed(3)} <span class="unit">€/Km</span></p>
                 </div>
                  <div class="details-item">
                     <p class="label">Equivalent ICE efficiency</p>
-                    <p class="value green">${results.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p>
+                    <p class="value blue">${res.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p>
                 </div>
                 <div class="details-item">
-                    <p class="label">Equivalent ICE Range</p>
-                    <p class="value blue">${results.equivalentKm.toFixed(1)} <span class="unit">Km</span></p>
+                    <p class="label">Equivalent ICE distance</p>
+                    <p class="value blue">${res.iceEquivalentKm.toFixed(1)} <span class="unit">Km</span></p>
                 </div>
                 <div class="details-item">
-                    <p class="label">Km per 1%</p>
-                    <p class="value yellow">${results.kmPerPercent.toFixed(2)} <span class="unit">Km</span></p>
-                </div>
-                <div class="details-item">
-                    <p class="label">Current travel cost</p>
-                    <p class="value red">${results.tripCost.toFixed(2)} <span class="unit">€</span></p>
+                    <p class="label">Km per %</p>
+                    <p class="value white">${res.kmPerPercent.toFixed(2)} <span class="unit">Km</span></p>
                 </div>
             `;
         } else {
             resultsContainer.innerHTML = `
                 <div class="no-results">
-                    <p>Enter your data to view your statistics.</p>
-                    <p style="font-size: 0.8rem; margin-top: 0.5rem;">(Make sure the initial battery is higher than the current one and the Km > 0)</p>
-                </div>
-            `;
+                    <p>Enter valid data (Start % > Current %)</p>
+                </div>`;
             statsGrid.innerHTML = '';
         }
     };
 
-    // --- EVENT LISTENERS ---
-
-    // Sync number and range inputs
-    for (const key in inputs) {
-        if (!inputs[key] || !ranges[key]) continue; // Skip if element doesn't exist
-
-        const inputEl = inputs[key];
-        const rangeEl = ranges[key];
-
-        inputEl.addEventListener('input', (e) => {
-            const value = Number(e.target.value);
-            state[key] = value;
-            rangeEl.value = value;
-            updateUI();
-            saveStateToLocalStorage(); // Save state after every change
-        });
-
-        rangeEl.addEventListener('input', (e) => {
-            const value = Number(e.target.value);
-            state[key] = value;
-            inputEl.value = value;
-            updateUI();
-            saveStateToLocalStorage(); // Save state after every change
-        });
-    }
-
-    // --- INITIALIZATION ---
-    // Set initial values for ranges based on state loaded from local storage or defaults
-    for (const key in state) {
-        if (inputs[key]) {
+    Object.keys(inputs).forEach(key => {
+        const update = (e) => {
+            state[key] = Number(e.target.value);
             inputs[key].value = state[key];
-        }
-        if (ranges[key]) {
             ranges[key].value = state[key];
-        }
-    }
+            updateUI();
+            saveState();
+        };
+        inputs[key].addEventListener('input', update);
+        ranges[key].addEventListener('input', update);
+    });
+
+    loadState();
+    Object.keys(state).forEach(key => {
+        if(inputs[key]) inputs[key].value = state[key];
+        if(ranges[key]) ranges[key].value = state[key];
+    });
     updateUI();
 });
     </script>
-    <script>
+	<script>
       if ('serviceWorker' in navigator) {
         window.addEventListener('load', function() {
           navigator.serviceWorker.register('/sw.js').then(function(registration) {
@@ -665,5 +602,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
       }
     </script>
+
 </body>
 </html>
