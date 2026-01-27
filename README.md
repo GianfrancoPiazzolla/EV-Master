@@ -1,47 +1,80 @@
-EV Master is a high-performance web-based calculator designed for Electric Vehicle (EV) owners. It provides real-time insights into driving efficiency, remaining range, and cost comparisons with Internal Combustion Engine (ICE) vehicles. Built as a lightweight, single-file web application, it features a modern dark-themed interface with glassmorphism effects and is PWA-ready for mobile devices.
+Here is a professional and clear **README.md** file in English, tailored for your GitHub repository.
 
-KEY FEATURES
+---
 
-Dynamic Autonomy Tracking: Instantly calculates expected residual range based on actual consumption and a user-defined battery buffer.
+# ⚡ EV Master
 
-Advanced Trip Statistics:
+**EV Master** is an all-in-one Web App designed for Electric Vehicle (EV) drivers. It allows users to analyze real-world consumption, estimate residual range, plan trips based on external conditions, and calculate charging costs and times.
 
-Consumption Metrics: Displays efficiency in both kWh/100Km and Km/kWh.
+---
 
-Cost Analysis: Calculates total trip cost and cost per kilometer based on local energy prices.
+## 🚀 Key Features
 
-Energy Monitoring: Tracks total kWh consumed and energy remaining at the set safety limit.
+The tool is divided into intelligent modules that interact with your data:
 
-ICE Comparison Engine: Compares EV efficiency against fuel prices to show equivalent Km/L and the distance an ICE vehicle would travel with the same budget.
+* **📊 Travel & Consumption Statistics**: Calculates real consumption in kWh/100km, efficiency (Km/kWh), and compares costs against Internal Combustion Engine (ICE) equivalents.
+* **🔋 Residual Autonomy**: A visual battery interface that estimates remaining kilometers based on your current driving efficiency and a custom "minimum buffer".
+* **🛣️ Trip Estimator**: Predicts future trip consumption by adjusting your baseline data according to:
+* External Temperature (°C).
+* Average Speed (Km/h).
+* Heating or Air Conditioning usage.
 
-Interactive Battery Visualization: Features a visual battery gauge that updates in real-time, highlighting the Start point and Buffer limit.
 
-Built-in Chronology Calculator: A specialized utility with a computation tape history to assist in multi-step trip planning.
+* **🔌 Charging Calculator**: Estimates the time and cost required to reach a target State of Charge (SOC).
+* **💾 Vehicle Presets**: Save and delete specific vehicle profiles (e.g., Battery Capacity, ICE efficiency) to switch between different EVs quickly.
+* **🧮 Quick Calculator**: A built-in calculator with a "computation tape" to keep track of quick math during trip planning.
 
-Persistent Settings: Automatically saves vehicle specifications, battery capacity, and energy costs to localStorage.
+---
 
-TECHNICAL OVERVIEW
+## 🛠️ Tech Stack
 
-Frontend: Pure HTML5 and CSS3 using custom properties for theme management.
+Built to be fast, lightweight, and dependency-free:
 
-Logic: Vanilla JavaScript (ES6+) with no external dependencies.
+* **HTML5**: Semantic structure.
+* **CSS3**: Modern layout using Flexbox, Grid, and Custom Properties for the dark-themed UI.
+* **JavaScript (ES6+)**: Logic for state management and calculations.
+* **LocalStorage**: Used to persist user inputs and vehicle presets directly in the browser.
+* **PWA Ready**: Includes metadata for mobile installation and a Service Worker template for offline capabilities.
 
-Responsiveness: Mobile-first design using CSS Grid and Flexbox, optimized for desktop and handheld displays.
+---
 
-PWA Integration: Includes support for manifest.json and Service Workers for offline capabilities and home-screen installation.
+## 📦 Installation & Usage
 
-CORE CALCULATIONS
+No installation or backend server is required.
 
-The application performs precise calculations using the following logic:
+1. **Clone the repository**:
+```bash
+git clone https://github.com/your-username/ev-master.git
 
-Residual Autonomy: Remaining Km = (Traveled Km / Used %) * (Current % - Buffer %).
+```
 
-Equivalent Fuel Efficiency: Eq Km/L = (Fuel Price / kWh Price) * EV Efficiency (Km/kWh).
 
-GETTING STARTED
+2. **Open the app**: Simply open `index.html` in any modern web browser.
 
-Clone the repository to your local machine.
+### Mobile Use (PWA)
 
-Open index.html in any modern web browser.
+If hosted on a secure (HTTPS) server like GitHub Pages, you can select "Add to Home Screen" on your mobile device to use it as a full-screen standalone application.
 
-The app is ready to use immediately without further configuration.
+---
+
+## 📐 Calculation Logic
+
+The app utilizes empirical correction factors for estimations:
+
+* **Efficiency**: Derived from the ratio of energy used (based on % drop and battery capacity) to the distance traveled.
+* **Environmental Impact**: The Trip Estimator applies penalties for low temperatures and high speeds to provide a realistic "worst-case" scenario.
+
+---
+
+## 📝 License
+
+Distributed under the MIT License. Feel free to use, modify, and share.
+
+---
+
+**Developed for the sustainable mobility community.**
+*If you find this tool helpful, please leave a ⭐ on GitHub!*
+
+---
+
+**Would you like me to generate the `manifest.json` or the `sw.js` (Service Worker) files mentioned in your code to make the PWA fully functional?**
