@@ -70,7 +70,3 @@ Distributed under the MIT License. Feel free to use, modify, and share.
 
 **Developed for the sustainable mobility community.**
 *If you find this tool helpful, please leave a ⭐ on GitHub!*
-
----
-
-**Would you like me to generate the `manifest.json` or the `sw.js` (Service Worker) files mentioned in your code to make the PWA fully functional?**
