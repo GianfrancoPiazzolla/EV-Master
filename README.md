@@ -1,7 +1,3 @@
-Here is a professional and clear **README.md** file in English, tailored for your GitHub repository.
-
----
-
 # ⚡ EV Master
 
 **EV Master** is an all-in-one Web App designed for Electric Vehicle (EV) drivers. It allows users to analyze real-world consumption, estimate residual range, plan trips based on external conditions, and calculate charging costs and times.
