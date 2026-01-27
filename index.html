@@ -419,6 +419,11 @@ input[type="range"]::-webkit-slider-thumb {
 
         <main class="grid-container">
             <div class="card input-card">
+                <div class="presets-container" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
+                    <select id="vehiclePresets" style="width: 100%; background-color: #1e293b80; border: 1px solid #334155; color: var(--text-light); border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 1rem;"></select>
+                    <button id="savePresetBtn" class="btn" style="padding: 0.75rem 1rem; white-space: nowrap;">Save As</button>
+                    <button id="deletePresetBtn" class="btn btn-op" style="padding: 0.75rem 1rem;">Delete</button>
+                </div>
                 <div class="input-group">
                     <label for="startBattery">Starting battery %</label>
                     <div class="input-wrapper">
@@ -508,6 +513,49 @@ input[type="range"]::-webkit-slider-thumb {
                 </div>
             </div>
 
+            <div class="card" id="trip-estimator-card">
+                <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Trip Consumption Estimator</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -1rem; margin-bottom: 1rem; text-align: left;">
+                    Estimates a future trip based on the <strong style="color: var(--accent-red);">real consumption</strong> calculated from your last drive.
+                </p>
+                <div class="input-group">
+                    <label for="tripDistance">Trip Distance (Km)</label>
+                    <div class="input-wrapper"><input type="number" id="tripDistance" value="100" min="0" max="1000"><span>Km</span></div>
+                </div>
+                <div class="input-group">
+                    <label for="externalTemp">External Temperature (°C)</label>
+                    <div class="input-wrapper"><input type="number" id="externalTemp" value="20" min="-20" max="40"><span>°C</span></div>
+                </div>
+                <div class="input-group">
+                    <label for="averageSpeed">Average Speed (Km/h)</label>
+                    <div class="input-wrapper"><input type="number" id="averageSpeed" value="90" min="30" max="140"><span>Km/h</span></div>
+                </div>
+                <div class="input-group">
+                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 1rem; color: var(--text-light);"><input type="checkbox" id="useHeatingAc" style="width: 1.2rem; height: 1.2rem;"> Use Heating / AC</label>
+                </div>
+                <div id="trip-estimator-results" class="details-grid" style="margin-top: 1.5rem; grid-template-columns: 1fr 1fr;"></div>
+            </div>
+
+            <div class="card" id="charging-calculator-card">
+                <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Charging Calculator</h3>
+                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -1rem; margin-bottom: 1rem; text-align: left;">
+                    Calculates charging time and cost. Doesn't account for charging curve (assumes linear speed).
+                </p>
+                 <div class="input-group">
+                    <label for="chargePower">Charging Power (kW)</label>
+                    <div class="input-wrapper"><input type="number" id="chargePower" value="11" min="1" max="350"><span>kW</span></div>
+                </div>
+                <div class="input-group">
+                    <label for="chargeStartSoc">Starting SOC (%)</label>
+                    <div class="input-wrapper"><input type="number" id="chargeStartSoc" value="20" min="0" max="100"><span>%</span></div>
+                </div>
+                <div class="input-group">
+                    <label for="chargeTargetSoc">Target SOC (%)</label>
+                    <div class="input-wrapper"><input type="number" id="chargeTargetSoc" value="80" min="0" max="100"><span>%</span></div>
+                </div>
+                <div id="charging-calculator-results" class="details-grid" style="margin-top: 1.5rem;"></div>
+            </div>
+
             <div class="card calculator-section">
                 <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Quick calculator</h3>
                 <div class="calc-container">
@@ -554,190 +602,284 @@ input[type="range"]::-webkit-slider-thumb {
     </div>
 
     <script>
-	document.addEventListener('DOMContentLoaded', () => {
-
-    const inputs = {
-        startBattery: document.getElementById('startBattery'),
-        currentBattery: document.getElementById('currentBattery'),
-        kilometersTraveled: document.getElementById('kilometersTraveled'),
-        minBattery: document.getElementById('minBattery'),
-        capacitaBatteria: document.getElementById('capacitaBatteria'),
-        costoKwh: document.getElementById('costoKwh'),
-        costoBenzina: document.getElementById('costoBenzina'),
-        consumoBenzina: document.getElementById('consumoBenzina'),
-    };
-
-    const ranges = {
-        startBattery: document.getElementById('startBatteryRange'),
-        currentBattery: document.getElementById('currentBatteryRange'),
-        kilometersTraveled: document.getElementById('kilometersTraveledRange'),
-        minBattery: document.getElementById('minBatteryRange'),
-        capacitaBatteria: document.getElementById('capacitaBatteriaRange'),
-        costoKwh: document.getElementById('costoKwhRange'),
-        costoBenzina: document.getElementById('costoBenzinaRange'),
-        consumoBenzina: document.getElementById('consumoBenzinaRange'),
-    };
-
-    const battery = {
-        level: document.getElementById('battery-level'),
-        percentageLabel: document.getElementById('battery-percentage-label'),
-        bufferMarker: document.getElementById('battery-buffer-marker'),
-        startMarker: document.getElementById('battery-start-marker'),
-    };
-
-    const resultsContainer = document.getElementById('results-content');
-    const statsGrid = document.getElementById('stats-grid');
-
+document.addEventListener('DOMContentLoaded', () => {
+    // --- STATE MANAGEMENT ---
     const state = {
-        startBattery: 100,
-        currentBattery: 80,
-        kilometersTraveled: 50,
-        minBattery: 10,
-        capacitaBatteria: 75,
-        costoKwh: 0.25,
-        costoBenzina: 1.70,
-        consumoBenzina: 15,
+        // Main calculator
+        startBattery: 100, currentBattery: 80, kilometersTraveled: 50, minBattery: 10,
+        capacitaBatteria: 75, costoKwh: 0.25, costoBenzina: 1.70, consumoBenzina: 15,
+        // Vehicle presets
+        presets: {}, selectedPreset: null,
+        // Trip estimator
+        tripDistance: 100, externalTemp: 20, averageSpeed: 90, useHeatingAc: false,
+        // Charging calculator
+        chargePower: 11, chargeStartSoc: 20, chargeTargetSoc: 80,
+    };
+    let baselineConsumption = null; // Stores kWh/100km from main calculator
+
+    // --- DOM ELEMENT SELECTORS ---
+    const DOMElements = {
+        inputs: {
+            startBattery: document.getElementById('startBattery'), currentBattery: document.getElementById('currentBattery'),
+            kilometersTraveled: document.getElementById('kilometersTraveled'), minBattery: document.getElementById('minBattery'),
+            capacitaBatteria: document.getElementById('capacitaBatteria'), costoKwh: document.getElementById('costoKwh'),
+            costoBenzina: document.getElementById('costoBenzina'), consumoBenzina: document.getElementById('consumoBenzina'),
+            tripDistance: document.getElementById('tripDistance'), externalTemp: document.getElementById('externalTemp'),
+            averageSpeed: document.getElementById('averageSpeed'), useHeatingAc: document.getElementById('useHeatingAc'),
+            chargePower: document.getElementById('chargePower'), chargeStartSoc: document.getElementById('chargeStartSoc'),
+            chargeTargetSoc: document.getElementById('chargeTargetSoc'),
+        },
+        ranges: {
+            startBattery: document.getElementById('startBatteryRange'), currentBattery: document.getElementById('currentBatteryRange'),
+            kilometersTraveled: document.getElementById('kilometersTraveledRange'), minBattery: document.getElementById('minBatteryRange'),
+            capacitaBatteria: document.getElementById('capacitaBatteriaRange'), costoKwh: document.getElementById('costoKwhRange'),
+            costoBenzina: document.getElementById('costoBenzinaRange'), consumoBenzina: document.getElementById('consumoBenzinaRange'),
+        },
+        battery: {
+            level: document.getElementById('battery-level'), percentageLabel: document.getElementById('battery-percentage-label'),
+            bufferMarker: document.getElementById('battery-buffer-marker'), startMarker: document.getElementById('battery-start-marker'),
+        },
+        presets: {
+            select: document.getElementById('vehiclePresets'),
+            saveBtn: document.getElementById('savePresetBtn'),
+            deleteBtn: document.getElementById('deletePresetBtn'),
+        },
+        results: {
+            main: document.getElementById('results-content'),
+            stats: document.getElementById('stats-grid'),
+            estimator: document.getElementById('trip-estimator-results'),
+            charging: document.getElementById('charging-calculator-results'),
+        }
     };
 
+    // --- LOCAL STORAGE ---
     const saveState = () => localStorage.setItem('evMasterState', JSON.stringify(state));
     const loadState = () => {
         const saved = localStorage.getItem('evMasterState');
-        if (saved) Object.assign(state, JSON.parse(saved));
+        if (saved) {
+            const loadedState = JSON.parse(saved);
+            // Ensure presets are not overwritten if they don't exist in old saves
+            if (!loadedState.presets) loadedState.presets = {};
+            Object.assign(state, loadedState);
+        }
+    };
+    
+    // --- PRESET MANAGEMENT ---
+    const initPresets = () => {
+        const { select, saveBtn, deleteBtn } = DOMElements.presets;
+        select.innerHTML = '<option value="">Select a vehicle profile...</option>';
+        for (const name in state.presets) {
+            const option = new Option(name, name, false, name === state.selectedPreset);
+            select.add(option);
+        }
+        select.addEventListener('change', (e) => applyPreset(e.target.value));
+        saveBtn.addEventListener('click', savePreset);
+        deleteBtn.addEventListener('click', deletePreset);
     };
 
-    const calculateResults = () => {
-        const { startBattery, currentBattery, kilometersTraveled, minBattery, capacitaBatteria, costoKwh, costoBenzina, consumoBenzina } = state;
+    const savePreset = () => {
+        const name = prompt('Enter a name for this vehicle profile:');
+        if (name && name.trim()) {
+            state.presets[name.trim()] = {
+                capacitaBatteria: state.capacitaBatteria,
+                consumoBenzina: state.consumoBenzina, // Example of another vehicle-specific param
+            };
+            state.selectedPreset = name.trim();
+            initPresets();
+            saveState();
+        }
+    };
+    
+    const applyPreset = (name) => {
+        if (name && state.presets[name]) {
+            const preset = state.presets[name];
+            state.capacitaBatteria = preset.capacitaBatteria;
+            state.consumoBenzina = preset.consumoBenzina;
+            state.selectedPreset = name;
+            updateUI();
+            saveState();
+            bindInputsToState(); // Re-sync inputs
+        }
+    };
 
-        if (startBattery <= currentBattery || kilometersTraveled <= 0 || capacitaBatteria <= 0) return null;
+    const deletePreset = () => {
+        const name = DOMElements.presets.select.value;
+        if (name && confirm(`Are you sure you want to delete the profile "${name}"?`)) {
+            delete state.presets[name];
+            state.selectedPreset = null;
+            initPresets();
+            saveState();
+        }
+    };
+
+    // --- CALCULATORS ---
+    const calculateMainResults = () => {
+        const { startBattery, currentBattery, kilometersTraveled, minBattery, capacitaBatteria, costoKwh, costoBenzina, consumoBenzina } = state;
+        if (startBattery <= currentBattery || kilometersTraveled <= 0 || capacitaBatteria <= 0) {
+            baselineConsumption = null; return null;
+        }
 
         const usedPercentage = startBattery - currentBattery;
         const kmPerPercent = kilometersTraveled / usedPercentage;
         const usableRemainingPercentage = Math.max(0, currentBattery - minBattery);
         const remainingRange = usableRemainingPercentage * kmPerPercent;
-
         const energyUsedKwh = (usedPercentage / 100) * capacitaBatteria;
-        const energyAtMinBuffer = (minBattery / 100) * capacitaBatteria;
-        const tripCost = energyUsedKwh * costoKwh;
-        const costPerKm = tripCost / kilometersTraveled;
-
         const consumptionKwh100km = (energyUsedKwh / kilometersTraveled) * 100;
+        
+        baselineConsumption = consumptionKwh100km; // Store for estimator
+
         const efficiencyKmKwh = kilometersTraveled / energyUsedKwh;
+        const tripCost = energyUsedKwh * costoKwh;
+        return {
+            remainingRange, kmPerPercent, consumptionKwh100km, efficiencyKmKwh, tripCost, energyUsedKwh,
+            energyAtMinBuffer: (minBattery / 100) * capacitaBatteria,
+            costPerKm: tripCost / kilometersTraveled,
+            iceEquivalentKm: (costoBenzina > 0 && consumoBenzina > 0) ? (tripCost / costoBenzina) * consumoBenzina : 0,
+            equivalentEfficiency: (costoKwh > 0 && isFinite(efficiencyKmKwh)) ? (costoBenzina / costoKwh) * efficiencyKmKwh : 0,
+        };
+    };
 
-        let iceEquivalentKm = 0;
-        if (costoBenzina > 0 && consumoBenzina > 0) {
-            const litersBoughtWithTripCost = tripCost / costoBenzina;
-            iceEquivalentKm = litersBoughtWithTripCost * consumoBenzina;
-        }
+    const calculateTripEstimation = () => {
+        if (!baselineConsumption) return null;
 
-        let equivalentEfficiency = 0;
-        if (costoKwh > 0 && isFinite(efficiencyKmKwh)) {
-            equivalentEfficiency = (costoBenzina / costoKwh) * efficiencyKmKwh;
-        }
+        const { tripDistance, externalTemp, averageSpeed, useHeatingAc, capacitaBatteria, currentBattery } = state;
+        
+        // Simplified adjustment factors
+        const tempFactor = externalTemp < 20 ? 1 + (20 - externalTemp) * 0.015 : 1 - (externalTemp - 20) * 0.005;
+        const speedFactor = averageSpeed > 90 ? 1 + Math.pow((averageSpeed - 90) / 50, 2) : 1 - Math.pow((90 - averageSpeed) / 100, 1.5);
+        const heatingFactor = useHeatingAc ? 1.15 : 1; // 15% penalty for AC/Heating
+        
+        const adjustedConsumption = baselineConsumption * tempFactor * speedFactor * heatingFactor;
+        const estimatedKwh = adjustedConsumption * (tripDistance / 100);
+        const socUsed = (estimatedKwh / capacitaBatteria) * 100;
+        
+        return {
+            adjustedConsumption: adjustedConsumption.toFixed(2),
+            estimatedKwh: estimatedKwh.toFixed(2),
+            socUsed: socUsed.toFixed(1),
+            finalSoc: (currentBattery - socUsed).toFixed(1),
+        };
+    };
+
+    const calculateCharging = () => {
+        const { chargeStartSoc, chargeTargetSoc, chargePower, capacitaBatteria, costoKwh } = state;
+        if (chargeTargetSoc <= chargeStartSoc || chargePower <= 0) return null;
+
+        const kwhNeeded = ((chargeTargetSoc - chargeStartSoc) / 100) * capacitaBatteria;
+        const timeHours = kwhNeeded / chargePower;
+        const totalMinutes = Math.round(timeHours * 60);
+        const hours = Math.floor(totalMinutes / 60);
+        const minutes = totalMinutes % 60;
 
         return {
-            remainingRange,
-            kmPerPercent,
-            consumptionKwh100km,
-            efficiencyKmKwh,
-            tripCost,
-            iceEquivalentKm,
-            equivalentEfficiency,
-            energyUsedKwh,
-            energyAtMinBuffer,
-            costPerKm
+            kwhAdded: kwhNeeded.toFixed(2),
+            cost: (kwhNeeded * costoKwh).toFixed(2),
+            time: `${hours}h ${minutes}m`,
         };
     };
 
+    // --- UI UPDATES ---
     const updateUI = () => {
+        // Main Results
         const { currentBattery, minBattery, startBattery } = state;
-        battery.level.style.width = `${currentBattery}%`;
-        
-        let color = 'var(--accent-emerald)';
-        if (currentBattery <= minBattery) color = 'var(--accent-red)';
-        else if (currentBattery <= 20) color = 'var(--accent-amber)';
-        
-        battery.level.style.backgroundColor = color;
-        battery.percentageLabel.innerText = `${currentBattery}%`;
-        battery.bufferMarker.style.left = `${minBattery}%`;
-        battery.startMarker.style.left = `${startBattery}%`;
+        DOMElements.battery.level.style.width = `${currentBattery}%`;
+        let color = currentBattery <= minBattery ? 'var(--accent-red)' : (currentBattery <= 20 ? 'var(--accent-amber)' : 'var(--accent-emerald)');
+        DOMElements.battery.level.style.backgroundColor = color;
+        DOMElements.battery.percentageLabel.innerText = `${currentBattery}%`;
+        DOMElements.battery.bufferMarker.style.left = `${minBattery}%`;
+        DOMElements.battery.startMarker.style.left = `${startBattery}%`;
 
-        const res = calculateResults();
-
+        const res = calculateMainResults();
         if (res) {
-            resultsContainer.innerHTML = `
-                <div class="results-data">
-                    <span class="value">${Math.round(res.remainingRange)}</span>
-                    <span class="unit">Km</span>
-                </div>`;
-            
-            statsGrid.innerHTML = `
-                <div class="details-item">
-                    <p class="label">Drive consumption</p>
-                    <p class="value red">${res.consumptionKwh100km.toFixed(2)} <span class="unit">kWh/100Km</span></p>
-                </div>
-                <div class="details-item">
-                    <p class="label">kWh Consumed</p>
-                    <p class="value red">${res.energyUsedKwh.toFixed(2)} <span class="unit">kWh</span></p>
-                </div>
-                <div class="details-item">
-                    <p class="label">Residual kWh at minimum %</p>
-                    <p class="value green">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p>
-                </div>
-                <div class="details-item">
-                    <p class="label">BEV efficiency</p>
-                    <p class="value blue">${res.efficiencyKmKwh.toFixed(2)} <span class="unit">Km/kWh</span></p>
-                </div>
-                <div class="details-item">
-                    <p class="label">Drive cost</p>
-                    <p class="value yellow">${res.tripCost.toFixed(2)} <span class="unit">€</span></p>
-                </div>
-                <div class="details-item">
-                    <p class="label">Drive cost per Km</p>
-                    <p class="value yellow">${res.costPerKm.toFixed(3)} <span class="unit">€/Km</span></p>
-                </div>
-                 <div class="details-item">
-                    <p class="label">Equivalent ICE efficiency</p>
-                    <p class="value blue">${res.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p>
-                </div>
-                <div class="details-item">
-                    <p class="label">Equivalent ICE distance</p>
-                    <p class="value blue">${res.iceEquivalentKm.toFixed(1)} <span class="unit">Km</span></p>
-                </div>
-                <div class="details-item">
-                    <p class="label">Km per %</p>
-                    <p class="value white">${res.kmPerPercent.toFixed(2)} <span class="unit">Km</span></p>
-                </div>
-            `;
+            DOMElements.results.main.innerHTML = `<div class="results-data"><span class="value">${Math.round(res.remainingRange)}</span><span class="unit">Km</span></div>`;
+            DOMElements.results.stats.innerHTML = `
+                <div class="details-item"><p class="label">Drive consumption</p><p class="value red">${res.consumptionKwh100km.toFixed(2)} <span class="unit">kWh/100Km</span></p></div>
+                <div class="details-item"><p class="label">kWh Consumed</p><p class="value red">${res.energyUsedKwh.toFixed(2)} <span class="unit">kWh</span></p></div>
+                <div class="details-item"><p class="label">Residual kWh at minimum %</p><p class="value green">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p></div>
+                <div class="details-item"><p class="label">BEV efficiency</p><p class="value blue">${res.efficiencyKmKwh.toFixed(2)} <span class="unit">Km/kWh</span></p></div>
+                <div class="details-item"><p class="label">Drive cost</p><p class="value yellow">${res.tripCost.toFixed(2)} <span class="unit">€</span></p></div>
+                <div class="details-item"><p class="label">Drive cost per Km</p><p class="value yellow">${res.costPerKm.toFixed(3)} <span class="unit">€/Km</span></p></div>
+                <div class="details-item"><p class="label">Equivalent ICE efficiency</p><p class="value blue">${res.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p></div>
+                <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value blue">${res.iceEquivalentKm.toFixed(1)} <span class="unit">Km</span></p></div>
+                <div class="details-item"><p class="label">Km per %</p><p class="value white">${res.kmPerPercent.toFixed(2)} <span class="unit">Km</span></p></div>`;
         } else {
-            resultsContainer.innerHTML = `
-                <div class="no-results">
-                    <p>Enter valid data (Start % > Current %)</p>
-                </div>`;
-            statsGrid.innerHTML = '';
+            DOMElements.results.main.innerHTML = `<div class="no-results"><p>Enter valid data (Start % > Current %)</p></div>`;
+            DOMElements.results.stats.innerHTML = '';
+        }
+        
+        // Update other calculators that depend on main results
+        updateTripEstimatorUI();
+        updateChargingCalculatorUI();
+    };
+    
+    const updateTripEstimatorUI = () => {
+        const res = calculateTripEstimation();
+        if(res) {
+            DOMElements.results.estimator.innerHTML = `
+                <div class="details-item"><p class="label">Adjusted Consumption</p><p class="value red">${res.adjustedConsumption} <span class="unit">kWh/100km</span></p></div>
+                <div class="details-item"><p class="label">Estimated kWh needed</p><p class="value red">${res.estimatedKwh} <span class="unit">kWh</span></p></div>
+                <div class="details-item"><p class="label">SOC% Used</p><p class="value yellow">${res.socUsed} <span class="unit">%</span></p></div>
+                <div class="details-item"><p class="label">Est. Final SOC</p><p class="value green">${res.finalSoc} <span class="unit">%</span></p></div>`;
+        } else {
+            DOMElements.results.estimator.innerHTML = `<div class="no-results" style="grid-column: 1 / -1;"><p>Calculate real consumption first by filling the main form.</p></div>`;
         }
     };
 
-    Object.keys(inputs).forEach(key => {
-        const update = (e) => {
-            state[key] = Number(e.target.value);
-            inputs[key].value = state[key];
-            ranges[key].value = state[key];
-            updateUI();
-            saveState();
-        };
-        inputs[key].addEventListener('input', update);
-        ranges[key].addEventListener('input', update);
-    });
+    const updateChargingCalculatorUI = () => {
+        const res = calculateCharging();
+        if (res) {
+             DOMElements.results.charging.innerHTML = `
+                <div class="details-item"><p class="label">Time</p><p class="value blue">${res.time} <span class="unit"></span></p></div>
+                <div class="details-item"><p class="label">Energy Added</p><p class="value green">${res.kwhAdded} <span class="unit">kWh</span></p></div>
+                <div class="details-item"><p class="label">Cost</p><p class="value yellow">${res.cost} <span class="unit">€</span></p></div>`;
+        } else {
+             DOMElements.results.charging.innerHTML = `<div class="no-results" style="grid-column: 1 / -1;"><p>Enter valid data (Target % > Start %)</p></div>`;
+        }
+    };
 
+    // --- BINDING AND INITIALIZATION ---
+    const bindInputsToState = () => {
+        // Bind main form inputs
+        Object.keys(DOMElements.inputs).forEach(key => {
+            const input = DOMElements.inputs[key];
+            if (!input) return;
+
+            const update = (e) => {
+                const value = e.target.type === 'checkbox' ? e.target.checked : Number(e.target.value);
+                state[key] = value;
+                if (DOMElements.inputs[key]) DOMElements.inputs[key].value = value;
+                if (DOMElements.ranges[key]) DOMElements.ranges[key].value = value;
+                updateUI();
+                saveState();
+            };
+
+            input.addEventListener('input', update);
+            if (DOMElements.ranges[key]) {
+                DOMElements.ranges[key].addEventListener('input', update);
+            }
+        });
+    };
+    
+    const syncStateToInputs = () => {
+         Object.keys(state).forEach(key => {
+            if (DOMElements.inputs[key]) {
+                const el = DOMElements.inputs[key];
+                if (el.type === 'checkbox') el.checked = state[key];
+                else el.value = state[key];
+            }
+            if (DOMElements.ranges[key]) DOMElements.ranges[key].value = state[key];
+        });
+    };
+
+    // Initial Load
     loadState();
-    Object.keys(state).forEach(key => {
-        if(inputs[key]) inputs[key].value = state[key];
-        if(ranges[key]) ranges[key].value = state[key];
-    });
+    initPresets();
+    syncStateToInputs();
+    bindInputsToState();
     updateUI();
 });
 
-// Calculator Logic Update (con supporto parentesi)
+// --- STANDALONE QUICK CALCULATOR LOGIC ---
 let expression = '';
 let shouldResetDisplay = false;
 
@@ -758,25 +900,17 @@ function calcAction(val) {
     else if (val === '=') {
         try {
             if (!expression) return;
-            
-            // Sanitizzazione minima e preparazione per calcolo
             let finalExpr = expression.replace(/×/g, '*').replace(/÷/g, '/');
-            
-            // Calcolo sicuro tramite Function constructor
             let result = new Function('return ' + finalExpr)();
-            
-            // Arrotondamento
             if (typeof result === 'number') {
-                result = Math.round((result + Number.EPSILON) * 100) / 100;
+                result = Math.round((result + Number.EPSILON) * 1000) / 1000;
             }
 
-            // Aggiunta al nastro
             const entry = document.createElement('div');
             entry.className = 'tape-entry';
             entry.innerHTML = `<div class="expr">${expression} =</div><div class="res">${result}</div>`;
             tape.prepend(entry);
 
-            // Aggiorna display
             opDisplay.innerText = expression + ' =';
             currentDisplay.innerText = result;
             expression = result.toString();
@@ -788,21 +922,14 @@ function calcAction(val) {
         }
     } 
     else {
-        // Gestione reset post-risultato
         if (shouldResetDisplay) {
-            // Se premo un numero dopo =, ricomincio. Se premo un operatore, continuo.
-            if (/[0-9(]/.test(val)) {
-                expression = '';
-            }
+            if (/[0-9(]/.test(val)) expression = '';
             shouldResetDisplay = false;
         }
-
-        // Formattazione estetica degli operatori
         let visualVal = val;
         if (val === '*') visualVal = ' × ';
         if (val === '/') visualVal = ' ÷ ';
         if (['+', '-'].includes(val)) visualVal = ` ${val} `;
-
         expression += visualVal;
         currentDisplay.innerText = expression;
     }
