@@ -409,6 +409,47 @@ input[type="range"]::-webkit-slider-thumb {
 .tape-entry .expr { color: var(--text-muted); }
 .tape-entry .res { color: var(--accent-emerald); font-weight: bold; font-size: 1.1rem; }
 
+/* Tab Styles */
+.tab-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+.tab-btn {
+    padding: 0.75rem 1.5rem;
+    cursor: pointer;
+    border: none;
+    border-bottom: 2px solid transparent;
+    border-radius: 0.5rem 0.5rem 0 0;
+    background: none;
+    color: var(--text-muted);
+    font-weight: 700;
+    transition: all 0.2s;
+    font-size: 1rem;
+}
+.tab-btn:hover {
+    background-color: var(--bg-card);
+    color: var(--text-light);
+}
+.tab-btn.active {
+    color: var(--accent-blue);
+    border-bottom-color: var(--accent-blue);
+}
+.tab-content {
+    display: none;
+    animation: fadeIn 0.5s;
+}
+.tab-content.active {
+    display: block;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
     </style>
 </head>
 <body>
@@ -417,183 +458,204 @@ input[type="range"]::-webkit-slider-thumb {
             <h1>EV MASTER</h1>
         </header>
 
-        <main class="grid-container">
-            <div class="card input-card">
-                <div class="presets-container" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
-                    <select id="vehiclePresets" style="width: 100%; background-color: #1e293b80; border: 1px solid #334155; color: var(--text-light); border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 1rem;"></select>
-                    <button id="savePresetBtn" class="btn" style="padding: 0.75rem 1rem; white-space: nowrap;">Save As</button>
-                    <button id="deletePresetBtn" class="btn btn-op" style="padding: 0.75rem 1rem;">Delete</button>
-                </div>
-                <div class="input-group">
-                    <label for="startBattery">Starting battery %</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="startBattery" value="100" min="0" max="100">
-                        <span>%</span>
+        <main>
+            <div class="grid-container">
+                <div class="card input-card">
+                    <div class="presets-container" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
+                        <select id="vehiclePresets" style="width: 100%; background-color: #1e293b80; border: 1px solid #334155; color: var(--text-light); border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 1rem;"></select>
+                        <button id="savePresetBtn" class="btn" style="padding: 0.75rem 1rem; white-space: nowrap;">Save As</button>
+                        <button id="deletePresetBtn" class="btn btn-op" style="padding: 0.75rem 1rem;">Delete</button>
                     </div>
-                    <input type="range" id="startBatteryRange" value="100" min="0" max="100">
-                </div>
-                <div class="input-group">
-                    <label for="currentBattery">Current battery %</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="currentBattery" value="80" min="0" max="100">
-                        <span>%</span>
-                    </div>
-                    <input type="range" id="currentBatteryRange" value="80" min="0" max="100">
-                </div>
-                <div class="input-group">
-                    <label for="kilometersTraveled">Traveled Km</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="kilometersTraveled" value="50" min="0" max="500">
-                        <span>Km</span>
-                    </div>
-                    <input type="range" id="kilometersTraveledRange" value="50" min="0" max="500">
-                </div>
-                <div class="input-group">
-                    <label for="minBattery">Minimum battery % limit</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="minBattery" value="10" min="0" max="100">
-                        <span>%</span>
-                    </div>
-                    <input type="range" id="minBatteryRange" value="10" min="0" max="100">
-                </div>
-                <div class="input-group">
-                    <label for="capacitaBatteria">Battery usable kWh capacity</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="capacitaBatteria" value="75" min="10" max="150">
-                        <span>kWh</span>
-                    </div>
-                    <input type="range" id="capacitaBatteriaRange" value="75" min="10" max="150">
-                </div>
-                <div class="input-group">
-                    <label for="costoKwh">Per unit kWh price</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="costoKwh" value="0.25" min="0.01" max="1.50" step="0.01">
-                        <span>€/kWh</span>
-                    </div>
-                    <input type="range" id="costoKwhRange" value="0.25" min="0.01" max="1.50" step="0.01">
-                </div>
-                <div class="input-group">
-                    <label for="costoBenzina">Per unit fuel price</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="costoBenzina" value="1.70" min="1.00" max="3.00" step="0.01">
-                        <span>€/L</span>
-                    </div>
-                    <input type="range" id="costoBenzinaRange" value="1.70" min="1.00" max="3.00" step="0.01">
-                </div>
-                <div class="input-group">
-                    <label for="consumoBenzina">ICE fuel consumption</label>
-                    <div class="input-wrapper">
-                        <input type="number" id="consumoBenzina" value="15" min="5" max="40" step="0.5">
-                        <span>Km/L</span>
-                    </div>
-                    <input type="range" id="consumoBenzinaRange" value="15" min="5" max="40" step="0.5">
-                </div>
-            </div>
-
-            <div class="card results-card">
-                <div class="battery-visual-container">
-                    <div id="battery-tip"></div>
-                    <div id="battery-box">
-                        <div id="battery-level"></div>
-                        <div id="battery-buffer-marker"><span>Buffer</span></div>
-                        <div id="battery-start-marker"><span>Start</span></div>
-                    </div>
-                    <div class="battery-label">
-                        <span id="battery-percentage-label">80%</span>
-                        <p>Current charge</p>
-                    </div>
-                </div>
-
-                <div class="results-display">
-                    <h2>Expected residual autonomy</h2>
-                    <div id="results-content"></div>
-
-                    <h3 class="stats-header">Travel and consumption Statistics</h3>
-                    <div id="stats-grid" class="details-grid"></div>
-                </div>
-            </div>
-
-            <div class="card" id="trip-estimator-card">
-                <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Trip Consumption Estimator</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -1rem; margin-bottom: 1rem; text-align: left;">
-                    Estimates a future trip based on the <strong style="color: var(--accent-red);">real consumption</strong> calculated from your last drive.
-                </p>
-                <div class="input-group">
-                    <label for="tripDistance">Trip Distance (Km)</label>
-                    <div class="input-wrapper"><input type="number" id="tripDistance" value="100" min="0" max="1000"><span>Km</span></div>
-                </div>
-                <div class="input-group">
-                    <label for="externalTemp">External Temperature (°C)</label>
-                    <div class="input-wrapper"><input type="number" id="externalTemp" value="20" min="-20" max="40"><span>°C</span></div>
-                </div>
-                <div class="input-group">
-                    <label for="averageSpeed">Average Speed (Km/h)</label>
-                    <div class="input-wrapper"><input type="number" id="averageSpeed" value="90" min="30" max="140"><span>Km/h</span></div>
-                </div>
-                <div class="input-group">
-                     <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 1rem; color: var(--text-light);"><input type="checkbox" id="useHeatingAc" style="width: 1.2rem; height: 1.2rem;"> Use Heating / AC</label>
-                </div>
-                <div id="trip-estimator-results" class="details-grid" style="margin-top: 1.5rem; grid-template-columns: 1fr 1fr;"></div>
-            </div>
-
-            <div class="card" id="charging-calculator-card">
-                <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Charging Calculator</h3>
-                <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -1rem; margin-bottom: 1rem; text-align: left;">
-                    Calculates charging time and cost. Doesn't account for charging curve (assumes linear speed).
-                </p>
-                 <div class="input-group">
-                    <label for="chargePower">Charging Power (kW)</label>
-                    <div class="input-wrapper"><input type="number" id="chargePower" value="11" min="1" max="350"><span>kW</span></div>
-                </div>
-                <div class="input-group">
-                    <label for="chargeStartSoc">Starting SOC (%)</label>
-                    <div class="input-wrapper"><input type="number" id="chargeStartSoc" value="20" min="0" max="100"><span>%</span></div>
-                </div>
-                <div class="input-group">
-                    <label for="chargeTargetSoc">Target SOC (%)</label>
-                    <div class="input-wrapper"><input type="number" id="chargeTargetSoc" value="80" min="0" max="100"><span>%</span></div>
-                </div>
-                <div id="charging-calculator-results" class="details-grid" style="margin-top: 1.5rem;"></div>
-            </div>
-
-            <div class="card calculator-section">
-                <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Quick calculator</h3>
-                <div class="calc-container">
-                    <div class="calc-main">
-                        <div class="calc-display">
-                            <div class="operation" id="calc-op"></div>
-                            <div class="current" id="calc-current">0</div>
+                    <div class="input-group">
+                        <label for="startBattery">Starting battery %</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="startBattery" value="100" min="0" max="100">
+                            <span>%</span>
                         </div>
-                        <div class="calc-buttons">
-                            <button class="btn btn-op" onclick="calcAction('C')">C</button>
-                            <button class="btn btn-op" onclick="calcAction('(')">(</button>
-                            <button class="btn btn-op" onclick="calcAction(')')">)</button>
-                            <button class="btn btn-op" onclick="calcAction('DEL')">←</button>
-                            
-                            <button class="btn" onclick="calcAction('7')">7</button>
-                            <button class="btn" onclick="calcAction('8')">8</button>
-                            <button class="btn" onclick="calcAction('9')">9</button>
-                            <button class="btn btn-op" onclick="calcAction('/')">÷</button>
-                            
-                            <button class="btn" onclick="calcAction('4')">4</button>
-                            <button class="btn" onclick="calcAction('5')">5</button>
-                            <button class="btn" onclick="calcAction('6')">6</button>
-                            <button class="btn btn-op" onclick="calcAction('*')">×</button>
-                            
-                            <button class="btn" onclick="calcAction('1')">1</button>
-                            <button class="btn" onclick="calcAction('2')">2</button>
-                            <button class="btn" onclick="calcAction('3')">3</button>
-                            <button class="btn btn-op" onclick="calcAction('-')">-</button>
-                            
-                            <button class="btn" style="grid-column: span 1;" onclick="calcAction('0')">0</button>
-                            <button class="btn" onclick="calcAction('.')">.</button>
-                            <button class="btn btn-accent" onclick="calcAction('=')">=</button>
-                            <button class="btn btn-op" onclick="calcAction('+')">+</button>
+                        <input type="range" id="startBatteryRange" value="100" min="0" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label for="currentBattery">Current battery %</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="currentBattery" value="80" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <input type="range" id="currentBatteryRange" value="80" min="0" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label for="kilometersTraveled">Traveled Km</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="kilometersTraveled" value="50" min="0" max="500">
+                            <span>Km</span>
+                        </div>
+                        <input type="range" id="kilometersTraveledRange" value="50" min="0" max="500">
+                    </div>
+                    <div class="input-group">
+                        <label for="minBattery">Minimum battery % limit</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="minBattery" value="10" min="0" max="100">
+                            <span>%</span>
+                        </div>
+                        <input type="range" id="minBatteryRange" value="10" min="0" max="100">
+                    </div>
+                    <div class="input-group">
+                        <label for="capacitaBatteria">Battery usable kWh capacity</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="capacitaBatteria" value="75" min="10" max="150">
+                            <span>kWh</span>
+                        </div>
+                        <input type="range" id="capacitaBatteriaRange" value="75" min="10" max="150">
+                    </div>
+                    <div class="input-group">
+                        <label for="costoKwh">Per unit kWh price</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="costoKwh" value="0.25" min="0.01" max="1.50" step="0.01">
+                            <span>€/kWh</span>
+                        </div>
+                        <input type="range" id="costoKwhRange" value="0.25" min="0.01" max="1.50" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label for="costoBenzina">Per unit fuel price</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="costoBenzina" value="1.70" min="1.00" max="3.00" step="0.01">
+                            <span>€/L</span>
+                        </div>
+                        <input type="range" id="costoBenzinaRange" value="1.70" min="1.00" max="3.00" step="0.01">
+                    </div>
+                    <div class="input-group">
+                        <label for="consumoBenzina">ICE fuel consumption</label>
+                        <div class="input-wrapper">
+                            <input type="number" id="consumoBenzina" value="15" min="5" max="40" step="0.5">
+                            <span>Km/L</span>
+                        </div>
+                        <input type="range" id="consumoBenzinaRange" value="15" min="5" max="40" step="0.5">
+                    </div>
+                </div>
+    
+                <div class="card results-card">
+                    <div class="battery-visual-container">
+                        <div id="battery-tip"></div>
+                        <div id="battery-box">
+                            <div id="battery-level"></div>
+                            <div id="battery-buffer-marker"><span>Buffer</span></div>
+                            <div id="battery-start-marker"><span>Start</span></div>
+                        </div>
+                        <div class="battery-label">
+                            <span id="battery-percentage-label">80%</span>
+                            <p>Current charge</p>
                         </div>
                     </div>
-                    <div class="tape-container">
-                        <div class="tape-title">Computation chronology</div>
-                        <div id="calc-tape">
+    
+                    <div class="results-display">
+                        <h2>Expected residual autonomy</h2>
+                        <div id="results-content"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-nav">
+                <button class="tab-btn active" data-tab="stats">Statistics</button>
+                <button class="tab-btn" data-tab="estimator">Trip Estimator</button>
+                <button class="tab-btn" data-tab="charging">Charging Calculator</button>
+                <button class="tab-btn" data-tab="quick-calc">Calculator</button>
+            </div>
+
+            <div class="tab-content-container">
+                <div id="tab-stats" class="tab-content active">
+                    <div class="card">
+                        <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Travel and consumption Statistics</h3>
+                        <div id="stats-grid" class="details-grid"></div>
+                    </div>
+                </div>
+
+                <div id="tab-estimator" class="tab-content">
+                    <div class="card" id="trip-estimator-card">
+                        <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Trip Consumption Estimator</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -1rem; margin-bottom: 1rem; text-align: left;">
+                            Estimates a future trip based on the <strong style="color: var(--accent-red);">real consumption</strong> calculated from your last drive.
+                        </p>
+                        <div class="input-group">
+                            <label for="tripDistance">Trip Distance (Km)</label>
+                            <div class="input-wrapper"><input type="number" id="tripDistance" value="100" min="0" max="1000"><span>Km</span></div>
+                        </div>
+                        <div class="input-group">
+                            <label for="externalTemp">External Temperature (°C)</label>
+                            <div class="input-wrapper"><input type="number" id="externalTemp" value="20" min="-20" max="40"><span>°C</span></div>
+                        </div>
+                        <div class="input-group">
+                            <label for="averageSpeed">Average Speed (Km/h)</label>
+                            <div class="input-wrapper"><input type="number" id="averageSpeed" value="90" min="30" max="140"><span>Km/h</span></div>
+                        </div>
+                        <div class="input-group">
+                             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 1rem; color: var(--text-light);"><input type="checkbox" id="useHeatingAc" style="width: 1.2rem; height: 1.2rem;"> Use Heating / AC</label>
+                        </div>
+                        <div id="trip-estimator-results" class="details-grid" style="margin-top: 1.5rem; grid-template-columns: 1fr 1fr;"></div>
+                    </div>
+                </div>
+
+                <div id="tab-charging" class="tab-content">
+                    <div class="card" id="charging-calculator-card">
+                        <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Charging Calculator</h3>
+                        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -1rem; margin-bottom: 1rem; text-align: left;">
+                            Calculates charging time and cost. Doesn't account for charging curve (assumes linear speed).
+                        </p>
+                         <div class="input-group">
+                            <label for="chargePower">Charging Power (kW)</label>
+                            <div class="input-wrapper"><input type="number" id="chargePower" value="11" min="1" max="350"><span>kW</span></div>
+                        </div>
+                        <div class="input-group">
+                            <label for="chargeStartSoc">Starting SOC (%)</label>
+                            <div class="input-wrapper"><input type="number" id="chargeStartSoc" value="20" min="0" max="100"><span>%</span></div>
+                        </div>
+                        <div class="input-group">
+                            <label for="chargeTargetSoc">Target SOC (%)</label>
+                            <div class="input-wrapper"><input type="number" id="chargeTargetSoc" value="80" min="0" max="100"><span>%</span></div>
+                        </div>
+                        <div id="charging-calculator-results" class="details-grid" style="margin-top: 1.5rem;"></div>
+                    </div>
+                </div>
+
+                <div id="tab-quick-calc" class="tab-content">
+                    <div class="card calculator-section">
+                        <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Quick calculator</h3>
+                        <div class="calc-container">
+                            <div class="calc-main">
+                                <div class="calc-display">
+                                    <div class="operation" id="calc-op"></div>
+                                    <div class="current" id="calc-current">0</div>
+                                </div>
+                                <div class="calc-buttons">
+                                    <button class="btn btn-op" onclick="calcAction('C')">C</button>
+                                    <button class="btn btn-op" onclick="calcAction('(')">(</button>
+                                    <button class="btn btn-op" onclick="calcAction(')')">)</button>
+                                    <button class="btn btn-op" onclick="calcAction('DEL')">←</button>
+                                    
+                                    <button class="btn" onclick="calcAction('7')">7</button>
+                                    <button class="btn" onclick="calcAction('8')">8</button>
+                                    <button class="btn" onclick="calcAction('9')">9</button>
+                                    <button class="btn btn-op" onclick="calcAction('/')">÷</button>
+                                    
+                                    <button class="btn" onclick="calcAction('4')">4</button>
+                                    <button class="btn" onclick="calcAction('5')">5</button>
+                                    <button class="btn" onclick="calcAction('6')">6</button>
+                                    <button class="btn btn-op" onclick="calcAction('*')">×</button>
+                                    
+                                    <button class="btn" onclick="calcAction('1')">1</button>
+                                    <button class="btn" onclick="calcAction('2')">2</button>
+                                    <button class="btn" onclick="calcAction('3')">3</button>
+                                    <button class="btn btn-op" onclick="calcAction('-')">-</button>
+                                    
+                                    <button class="btn" style="grid-column: span 1;" onclick="calcAction('0')">0</button>
+                                    <button class="btn" onclick="calcAction('.')">.</button>
+                                    <button class="btn btn-accent" onclick="calcAction('=')">=</button>
+                                    <button class="btn btn-op" onclick="calcAction('+')">+</button>
+                                </div>
+                            </div>
+                            <div class="tape-container">
+                                <div class="tape-title">Computation chronology</div>
+                                <div id="calc-tape">
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -877,6 +939,32 @@ document.addEventListener('DOMContentLoaded', () => {
     syncStateToInputs();
     bindInputsToState();
     updateUI();
+
+    // --- TAB NAVIGATION ---
+    const initTabs = () => {
+        const tabContainer = document.querySelector('.tab-nav');
+        if (!tabContainer) return;
+        
+        tabContainer.addEventListener('click', (e) => {
+            const clickedTab = e.target.closest('.tab-btn');
+            if (!clickedTab) return;
+
+            if (clickedTab.classList.contains('active')) return;
+
+            // Deactivate all tabs and content
+            tabContainer.querySelectorAll('.tab-btn').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+            // Activate clicked tab and its content
+            clickedTab.classList.add('active');
+            const targetContent = document.getElementById('tab-' + clickedTab.dataset.tab);
+            if (targetContent) {
+                targetContent.classList.add('active');
+            }
+        });
+    };
+
+    initTabs();
 });
 
 // --- STANDALONE QUICK CALCULATOR LOGIC ---
