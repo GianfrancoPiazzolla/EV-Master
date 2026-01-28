@@ -502,36 +502,36 @@ input[type="range"]::-webkit-slider-thumb {
                         <input type="range" id="minBatteryRange" value="10" min="0" max="100">
                     </div>
                     <div class="input-group">
-                        <label for="capacitaBatteria">Battery usable kWh capacity</label>
+                        <label for="batteryCapacity">Battery usable kWh capacity</label>
                         <div class="input-wrapper">
-                            <input type="number" id="capacitaBatteria" value="75" min="10" max="150">
+                            <input type="number" id="batteryCapacity" value="75" min="10" max="150">
                             <span>kWh</span>
                         </div>
-                        <input type="range" id="capacitaBatteriaRange" value="75" min="10" max="150">
+                        <input type="range" id="batteryCapacityRange" value="75" min="10" max="150">
                     </div>
                     <div class="input-group">
-                        <label for="costoKwh">Per unit kWh price</label>
+                        <label for="kwhPrice">Per unit kWh price</label>
                         <div class="input-wrapper">
-                            <input type="number" id="costoKwh" value="0.25" min="0.01" max="1.50" step="0.01">
+                            <input type="number" id="kwhPrice" value="0.25" min="0.01" max="1.50" step="0.01">
                             <span>€/kWh</span>
                         </div>
-                        <input type="range" id="costoKwhRange" value="0.25" min="0.01" max="1.50" step="0.01">
+                        <input type="range" id="kwhPriceRange" value="0.25" min="0.01" max="1.50" step="0.01">
                     </div>
                     <div class="input-group">
-                        <label for="costoBenzina">Per unit fuel price</label>
+                        <label for="fuelPrice">Per unit fuel price</label>
                         <div class="input-wrapper">
-                            <input type="number" id="costoBenzina" value="1.70" min="1.00" max="3.00" step="0.01">
+                            <input type="number" id="fuelPrice" value="1.70" min="1.00" max="3.00" step="0.01">
                             <span>€/L</span>
                         </div>
-                        <input type="range" id="costoBenzinaRange" value="1.70" min="1.00" max="3.00" step="0.01">
+                        <input type="range" id="fuelPriceRange" value="1.70" min="1.00" max="3.00" step="0.01">
                     </div>
                     <div class="input-group">
-                        <label for="consumoBenzina">ICE fuel consumption</label>
+                        <label for="fuelConsumption">ICE fuel consumption</label>
                         <div class="input-wrapper">
-                            <input type="number" id="consumoBenzina" value="15" min="5" max="40" step="0.5">
+                            <input type="number" id="fuelConsumption" value="15" min="5" max="40" step="0.5">
                             <span>Km/L</span>
                         </div>
-                        <input type="range" id="consumoBenzinaRange" value="15" min="5" max="40" step="0.5">
+                        <input type="range" id="fuelConsumptionRange" value="15" min="5" max="40" step="0.5">
                     </div>
                 </div>
             
@@ -681,7 +681,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const state = {
         // Main calculator
         startBattery: 100, currentBattery: 80, kilometersTraveled: 50, minBattery: 10,
-        capacitaBatteria: 75, costoKwh: 0.25, costoBenzina: 1.70, consumoBenzina: 15,
+        batteryCapacity: 75, kwhPrice: 0.25, fuelPrice: 1.70, fuelConsumption: 15,
         // Vehicle presets
         presets: {}, selectedPreset: null,
         // Trip estimator
@@ -696,8 +696,8 @@ document.addEventListener('DOMContentLoaded', () => {
         inputs: {
             startBattery: document.getElementById('startBattery'), currentBattery: document.getElementById('currentBattery'),
             kilometersTraveled: document.getElementById('kilometersTraveled'), minBattery: document.getElementById('minBattery'),
-            capacitaBatteria: document.getElementById('capacitaBatteria'), costoKwh: document.getElementById('costoKwh'),
-            costoBenzina: document.getElementById('costoBenzina'), consumoBenzina: document.getElementById('consumoBenzina'),
+            batteryCapacity: document.getElementById('batteryCapacity'), kwhPrice: document.getElementById('kwhPrice'),
+            fuelPrice: document.getElementById('fuelPrice'), fuelConsumption: document.getElementById('fuelConsumption'),
             tripDistance: document.getElementById('tripDistance'), externalTemp: document.getElementById('externalTemp'),
             averageSpeed: document.getElementById('averageSpeed'), useHeatingAc: document.getElementById('useHeatingAc'),
             chargePower: document.getElementById('chargePower'), chargeStartSoc: document.getElementById('chargeStartSoc'),
@@ -706,8 +706,8 @@ document.addEventListener('DOMContentLoaded', () => {
         ranges: {
             startBattery: document.getElementById('startBatteryRange'), currentBattery: document.getElementById('currentBatteryRange'),
             kilometersTraveled: document.getElementById('kilometersTraveledRange'), minBattery: document.getElementById('minBatteryRange'),
-            capacitaBatteria: document.getElementById('capacitaBatteriaRange'), costoKwh: document.getElementById('costoKwhRange'),
-            costoBenzina: document.getElementById('costoBenzinaRange'), consumoBenzina: document.getElementById('consumoBenzinaRange'),
+            batteryCapacity: document.getElementById('batteryCapacityRange'), kwhPrice: document.getElementById('kwhPriceRange'),
+            fuelPrice: document.getElementById('fuelPriceRange'), fuelConsumption: document.getElementById('fuelConsumptionRange'),
             tripDistance: document.getElementById('tripDistanceRange'), externalTemp: document.getElementById('externalTempRange'),
             averageSpeed: document.getElementById('averageSpeedRange'),
             chargePower: document.getElementById('chargePowerRange'), chargeStartSoc: document.getElementById('chargeStartSocRange'),
@@ -759,8 +759,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const name = prompt('Enter a name for this vehicle profile:');
         if (name && name.trim()) {
             state.presets[name.trim()] = {
-                capacitaBatteria: state.capacitaBatteria,
-                consumoBenzina: state.consumoBenzina, // Example of another vehicle-specific param
+                batteryCapacity: state.batteryCapacity,
+                fuelConsumption: state.fuelConsumption, // Example of another vehicle-specific param
             };
             state.selectedPreset = name.trim();
             initPresets();
@@ -771,8 +771,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const applyPreset = (name) => {
         if (name && state.presets[name]) {
             const preset = state.presets[name];
-            state.capacitaBatteria = preset.capacitaBatteria;
-            state.consumoBenzina = preset.consumoBenzina;
+            state.batteryCapacity = preset.batteryCapacity;
+            state.fuelConsumption = preset.fuelConsumption;
             state.selectedPreset = name;
             updateUI();
             saveState();
@@ -792,8 +792,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- CALCULATORS ---
     const calculateMainResults = () => {
-        const { startBattery, currentBattery, kilometersTraveled, minBattery, capacitaBatteria, costoKwh, costoBenzina, consumoBenzina } = state;
-        if (startBattery <= currentBattery || kilometersTraveled <= 0 || capacitaBatteria <= 0) {
+        const { startBattery, currentBattery, kilometersTraveled, minBattery, batteryCapacity, kwhPrice, fuelPrice, fuelConsumption } = state;
+        if (startBattery <= currentBattery || kilometersTraveled <= 0 || batteryCapacity <= 0) {
             baselineConsumption = null; return null;
         }
 
@@ -801,26 +801,26 @@ document.addEventListener('DOMContentLoaded', () => {
         const kmPerPercent = kilometersTraveled / usedPercentage;
         const usableRemainingPercentage = Math.max(0, currentBattery - minBattery);
         const remainingRange = usableRemainingPercentage * kmPerPercent;
-        const energyUsedKwh = (usedPercentage / 100) * capacitaBatteria;
+        const energyUsedKwh = (usedPercentage / 100) * batteryCapacity;
         const consumptionKwh100km = (energyUsedKwh / kilometersTraveled) * 100;
         
         baselineConsumption = consumptionKwh100km; // Store for estimator
 
         const efficiencyKmKwh = kilometersTraveled / energyUsedKwh;
-        const tripCost = energyUsedKwh * costoKwh;
+        const tripCost = energyUsedKwh * kwhPrice;
         return {
             remainingRange, kmPerPercent, consumptionKwh100km, efficiencyKmKwh, tripCost, energyUsedKwh,
-            energyAtMinBuffer: (minBattery / 100) * capacitaBatteria,
+            energyAtMinBuffer: (minBattery / 100) * batteryCapacity,
             costPerKm: tripCost / kilometersTraveled,
-            iceEquivalentKm: (costoBenzina > 0 && consumoBenzina > 0) ? (tripCost / costoBenzina) * consumoBenzina : 0,
-            equivalentEfficiency: (costoKwh > 0 && isFinite(efficiencyKmKwh)) ? (costoBenzina / costoKwh) * efficiencyKmKwh : 0,
+            iceEquivalentKm: (fuelPrice > 0 && fuelConsumption > 0) ? (tripCost / fuelPrice) * fuelConsumption : 0,
+            equivalentEfficiency: (kwhPrice > 0 && isFinite(efficiencyKmKwh)) ? (fuelPrice / kwhPrice) * efficiencyKmKwh : 0,
         };
     };
 
     const calculateTripEstimation = () => {
         if (!baselineConsumption) return null;
 
-        const { tripDistance, externalTemp, averageSpeed, useHeatingAc, capacitaBatteria, currentBattery } = state;
+        const { tripDistance, externalTemp, averageSpeed, useHeatingAc, batteryCapacity, currentBattery } = state;
         
         // Simplified adjustment factors
         const tempFactor = externalTemp < 20 ? 1 + (20 - externalTemp) * 0.015 : 1 - (externalTemp - 20) * 0.005;
@@ -829,7 +829,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const adjustedConsumption = baselineConsumption * tempFactor * speedFactor * heatingFactor;
         const estimatedKwh = adjustedConsumption * (tripDistance / 100);
-        const socUsed = (estimatedKwh / capacitaBatteria) * 100;
+        const socUsed = (estimatedKwh / batteryCapacity) * 100;
         
         return {
             adjustedConsumption: adjustedConsumption.toFixed(2),
@@ -840,10 +840,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const calculateCharging = () => {
-        const { chargeStartSoc, chargeTargetSoc, chargePower, capacitaBatteria, costoKwh } = state;
+        const { chargeStartSoc, chargeTargetSoc, chargePower, batteryCapacity, kwhPrice } = state;
         if (chargeTargetSoc <= chargeStartSoc || chargePower <= 0) return null;
 
-        const kwhNeeded = ((chargeTargetSoc - chargeStartSoc) / 100) * capacitaBatteria;
+        const kwhNeeded = ((chargeTargetSoc - chargeStartSoc) / 100) * batteryCapacity;
         const timeHours = kwhNeeded / chargePower;
         const totalMinutes = Math.round(timeHours * 60);
         const hours = Math.floor(totalMinutes / 60);
@@ -851,7 +851,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         return {
             kwhAdded: kwhNeeded.toFixed(2),
-            cost: (kwhNeeded * costoKwh).toFixed(2),
+            cost: (kwhNeeded * kwhPrice).toFixed(2),
             time: `${hours}h ${minutes}m`,
         };
     };
