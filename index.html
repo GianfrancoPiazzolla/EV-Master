@@ -91,6 +91,7 @@ header h1 {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    margin-top: 20px;
 }
 
 .input-group label {
@@ -157,7 +158,6 @@ input[type="range"]::-webkit-slider-thumb {
 
 .battery-visual-container {
     position: relative;
-    max-width: 280px;
     margin: 0 auto 2rem;
 }
 
@@ -580,14 +580,17 @@ input[type="range"]::-webkit-slider-thumb {
                         <div class="input-group">
                             <label for="tripDistance">Trip Distance (Km)</label>
                             <div class="input-wrapper"><input type="number" id="tripDistance" value="100" min="0" max="1000"><span>Km</span></div>
+                        <input type="range" id="tripDistanceRange" value="100" min="0" max="1000">
                         </div>
                         <div class="input-group">
                             <label for="externalTemp">External Temperature (°C)</label>
-                            <div class="input-wrapper"><input type="number" id="externalTemp" value="20" min="-20" max="40"><span>°C</span></div>
+                            <div class="input-wrapper"><input type="number" id="externalTemp" value="20" min="-20" max="50"><span>°C</span></div>
+                        <input type="range" id="externalTempRange" value="20" min="-20" max="50">
                         </div>
                         <div class="input-group">
                             <label for="averageSpeed">Average Speed (Km/h)</label>
-                            <div class="input-wrapper"><input type="number" id="averageSpeed" value="90" min="30" max="140"><span>Km/h</span></div>
+                            <div class="input-wrapper"><input type="number" id="averageSpeed" value="90" min="10" max="250"><span>Km/h</span></div>
+                        <input type="range" id="averageSpeedRange" value="90" min="10" max="250">
                         </div>
                         <div class="input-group">
                              <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 1rem; color: var(--text-light);"><input type="checkbox" id="useHeatingAc" style="width: 1.2rem; height: 1.2rem;"> Use Heating / AC</label>
@@ -604,15 +607,18 @@ input[type="range"]::-webkit-slider-thumb {
                         </p>
                          <div class="input-group">
                             <label for="chargePower">Charging Power (kW)</label>
-                            <div class="input-wrapper"><input type="number" id="chargePower" value="11" min="1" max="350"><span>kW</span></div>
+                            <div class="input-wrapper"><input type="number" id="chargePower" value="11" min="1" max="350" step="0.1"><span>kW</span></div>
+                        <input type="range" id="chargePowerRange" value="11" min="1" max="350" step="0.1">
                         </div>
                         <div class="input-group">
                             <label for="chargeStartSoc">Starting SOC (%)</label>
                             <div class="input-wrapper"><input type="number" id="chargeStartSoc" value="20" min="0" max="100"><span>%</span></div>
+                        <input type="range" id="chargeStartSocRange" value="20" min="0" max="100">
                         </div>
                         <div class="input-group">
                             <label for="chargeTargetSoc">Target SOC (%)</label>
                             <div class="input-wrapper"><input type="number" id="chargeTargetSoc" value="80" min="0" max="100"><span>%</span></div>
+                        <input type="range" id="chargeTargetSocRange" value="80" min="0" max="100">
                         </div>
                         <div id="charging-calculator-results" class="details-grid" style="margin-top: 1.5rem;"></div>
                     </div>
@@ -699,6 +705,10 @@ document.addEventListener('DOMContentLoaded', () => {
             kilometersTraveled: document.getElementById('kilometersTraveledRange'), minBattery: document.getElementById('minBatteryRange'),
             capacitaBatteria: document.getElementById('capacitaBatteriaRange'), costoKwh: document.getElementById('costoKwhRange'),
             costoBenzina: document.getElementById('costoBenzinaRange'), consumoBenzina: document.getElementById('consumoBenzinaRange'),
+            tripDistance: document.getElementById('tripDistanceRange'), externalTemp: document.getElementById('externalTempRange'),
+            averageSpeed: document.getElementById('averageSpeedRange'),
+            chargePower: document.getElementById('chargePowerRange'), chargeStartSoc: document.getElementById('chargeStartSocRange'),
+            chargeTargetSoc: document.getElementById('chargeTargetSocRange'),
         },
         battery: {
             level: document.getElementById('battery-level'), percentageLabel: document.getElementById('battery-percentage-label'),
