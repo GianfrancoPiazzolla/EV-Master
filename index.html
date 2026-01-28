@@ -470,7 +470,7 @@ input[type="range"]::-webkit-slider-thumb {
                         <button id="deletePresetBtn" class="btn btn-op" style="padding: 0.75rem 1rem;">Delete</button>
                     </div>
                     <div class="input-group">
-                        <label for="startBattery">Starting battery %</label>
+                        <label for="startBattery">Starting battery SoC</label>
                         <div class="input-wrapper">
                             <input type="number" id="startBattery" value="100" min="0" max="100">
                             <span>%</span>
@@ -478,7 +478,7 @@ input[type="range"]::-webkit-slider-thumb {
                         <input type="range" id="startBatteryRange" value="100" min="0" max="100">
                     </div>
                     <div class="input-group">
-                        <label for="currentBattery">Current battery %</label>
+                        <label for="currentBattery">Current battery SoC</label>
                         <div class="input-wrapper">
                             <input type="number" id="currentBattery" value="80" min="0" max="100">
                             <span>%</span>
@@ -494,7 +494,7 @@ input[type="range"]::-webkit-slider-thumb {
                         <input type="range" id="kilometersTraveledRange" value="50" min="0" max="500">
                     </div>
                     <div class="input-group">
-                        <label for="minBattery">Minimum battery % limit</label>
+                        <label for="minBattery">Minimum battery SoC limit</label>
                         <div class="input-wrapper">
                             <input type="number" id="minBattery" value="10" min="0" max="100">
                             <span>%</span>
@@ -538,10 +538,10 @@ input[type="range"]::-webkit-slider-thumb {
 
             <div class="tab-nav">
                 <button class="tab-btn active" data-tab="stats">Statistics</button>
-                <button class="tab-btn" data-tab="autonomy">Residual Autonomy</button>
-                <button class="tab-btn" data-tab="estimator">Trip Estimator</button>
-                <button class="tab-btn" data-tab="charging">Charging Calculator</button>
-                <button class="tab-btn" data-tab="quick-calc">Calculator</button>
+                <button class="tab-btn" data-tab="autonomy">Autonomy</button>
+                <button class="tab-btn" data-tab="estimator">Estimator</button>
+                <button class="tab-btn" data-tab="charging">Charging</button>
+                <button class="tab-btn" data-tab="quick-calc">Calc</button>
             </div>
 
             <div class="tab-content-container">
@@ -581,17 +581,17 @@ input[type="range"]::-webkit-slider-thumb {
                             Estimates a future trip based on the <strong style="color: var(--accent-red);">real consumption</strong> calculated from your last drive.
                         </p>
                         <div class="input-group">
-                            <label for="tripDistance">Trip Distance (Km)</label>
+                            <label for="tripDistance">Trip distance</label>
                             <div class="input-wrapper"><input type="number" id="tripDistance" value="100" min="0" max="1000"><span>Km</span></div>
                         <input type="range" id="tripDistanceRange" value="100" min="0" max="1000">
                         </div>
                         <div class="input-group">
-                            <label for="externalTemp">External Temperature (°C)</label>
+                            <label for="externalTemp">External temperature</label>
                             <div class="input-wrapper"><input type="number" id="externalTemp" value="20" min="-20" max="50"><span>°C</span></div>
                         <input type="range" id="externalTempRange" value="20" min="-20" max="50">
                         </div>
                         <div class="input-group">
-                            <label for="averageSpeed">Average Speed (Km/h)</label>
+                            <label for="averageSpeed">Average speed</label>
                             <div class="input-wrapper"><input type="number" id="averageSpeed" value="90" min="10" max="250"><span>Km/h</span></div>
                         <input type="range" id="averageSpeedRange" value="90" min="10" max="250">
                         </div>
@@ -609,17 +609,17 @@ input[type="range"]::-webkit-slider-thumb {
                             Calculates charging time and cost. Doesn't account for charging curve (assumes linear speed).
                         </p>
                          <div class="input-group">
-                            <label for="chargePower">Charging Power (kW)</label>
+                            <label for="chargePower">Charging power</label>
                             <div class="input-wrapper"><input type="number" id="chargePower" value="11" min="1" max="350" step="0.1"><span>kW</span></div>
                         <input type="range" id="chargePowerRange" value="11" min="1" max="350" step="0.1">
                         </div>
                         <div class="input-group">
-                            <label for="chargeStartSoc">Starting SOC (%)</label>
+                            <label for="chargeStartSoc">Starting battery SoC</label>
                             <div class="input-wrapper"><input type="number" id="chargeStartSoc" value="20" min="0" max="100"><span>%</span></div>
                         <input type="range" id="chargeStartSocRange" value="20" min="0" max="100">
                         </div>
                         <div class="input-group">
-                            <label for="chargeTargetSoc">Target SOC (%)</label>
+                            <label for="chargeTargetSoc">Target battery SoC</label>
                             <div class="input-wrapper"><input type="number" id="chargeTargetSoc" value="80" min="0" max="100"><span>%</span></div>
                         <input type="range" id="chargeTargetSocRange" value="80" min="0" max="100">
                         </div>
@@ -664,7 +664,7 @@ input[type="range"]::-webkit-slider-thumb {
                                 </div>
                             </div>
                             <div class="tape-container">
-                                <div class="tape-title">Computation chronology</div>
+                                <div class="tape-title">History Tape</div>
                                 <div id="calc-tape">
                                 </div>
                             </div>
@@ -896,8 +896,8 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.results.estimator.innerHTML = `
                 <div class="details-item"><p class="label">Adjusted Consumption</p><p class="value red">${res.adjustedConsumption} <span class="unit">kWh/100km</span></p></div>
                 <div class="details-item"><p class="label">Estimated kWh needed</p><p class="value red">${res.estimatedKwh} <span class="unit">kWh</span></p></div>
-                <div class="details-item"><p class="label">SOC% Used</p><p class="value yellow">${res.socUsed} <span class="unit">%</span></p></div>
-                <div class="details-item"><p class="label">Est. Final SOC</p><p class="value green">${res.finalSoc} <span class="unit">%</span></p></div>`;
+                <div class="details-item"><p class="label">SOC Used</p><p class="value yellow">${res.socUsed} <span class="unit">%</span></p></div>
+                <div class="details-item"><p class="label">Estimated Final SOC</p><p class="value green">${res.finalSoc} <span class="unit">%</span></p></div>`;
         } else {
             DOMElements.results.estimator.innerHTML = `<div class="no-results" style="grid-column: 1 / -1;"><p>Calculate real consumption first by filling the main form.</p></div>`;
         }
@@ -907,7 +907,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = calculateCharging();
         if (res) {
              DOMElements.results.charging.innerHTML = `
-                <div class="details-item"><p class="label">Time</p><p class="value blue">${res.time} <span class="unit"></span></p></div>
+                <div class="details-item"><p class="label">Time Needed</p><p class="value blue">${res.time} <span class="unit"></span></p></div>
                 <div class="details-item"><p class="label">Energy Added</p><p class="value green">${res.kwhAdded} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Cost</p><p class="value yellow">${res.cost} <span class="unit">€</span></p></div>`;
         } else {
