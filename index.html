@@ -419,7 +419,6 @@ input[type="range"]::-webkit-slider-thumb {
     gap: 0.5rem;
     margin-top: 2rem;
     padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border-color);
 }
 .tab-btn {
     padding: 0.75rem 1.5rem;
@@ -873,7 +872,7 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.results.stats.innerHTML = `
                 <div class="details-item"><p class="label">Drive consumption</p><p class="value red">${res.consumptionKwh100km.toFixed(2)} <span class="unit">kWh/100Km</span></p></div>
                 <div class="details-item"><p class="label">kWh Consumed</p><p class="value red">${res.energyUsedKwh.toFixed(2)} <span class="unit">kWh</span></p></div>
-                <div class="details-item"><p class="label">Residual kWh at minimum %</p><p class="value green">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p></div>
+                <div class="details-item"><p class="label">Residual kWh at minimum SoC</p><p class="value green">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">BEV efficiency</p><p class="value blue">${res.efficiencyKmKwh.toFixed(2)} <span class="unit">Km/kWh</span></p></div>
                 <div class="details-item"><p class="label">Drive cost</p><p class="value yellow">${res.tripCost.toFixed(2)} <span class="unit">€</span></p></div>
                 <div class="details-item"><p class="label">Drive cost per Km</p><p class="value yellow">${res.costPerKm.toFixed(3)} <span class="unit">€/Km</span></p></div>
