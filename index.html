@@ -527,10 +527,10 @@ input[type="range"]::-webkit-slider-thumb {
                     <div class="input-group">
                         <label for="fuelConsumption">ICE fuel consumption</label>
                         <div class="input-wrapper">
-                            <input type="number" id="fuelConsumption" value="15" min="5" max="40" step="0.5">
+                            <input type="number" id="fuelConsumption" value="15" min="5" max="40" step="0.1">
                             <span>Km/L</span>
                         </div>
-                        <input type="range" id="fuelConsumptionRange" value="15" min="5" max="40" step="0.5">
+                        <input type="range" id="fuelConsumptionRange" value="15" min="5" max="40" step="0.1">
                     </div>
                 </div>
             
@@ -541,6 +541,7 @@ input[type="range"]::-webkit-slider-thumb {
                 <button class="tab-btn" data-tab="estimator">Estimator</button>
                 <button class="tab-btn" data-tab="charging">Charging</button>
                 <button class="tab-btn" data-tab="quick-calc">Calc</button>
+                <button class="tab-btn" data-tab="about">About</button>
             </div>
 
             <div class="tab-content-container">
@@ -668,6 +669,15 @@ input[type="range"]::-webkit-slider-thumb {
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </div>
+                <div id="tab-about" class="tab-content">
+                    <div class="card">
+                        <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">About EV Master</h3>
+                        <p style="text-align: left; margin-bottom: 0.5rem;"><strong style="color: var(--accent-blue);">Synopsis:</strong> A simple but effective web-based calculator designed for BEV owners</p>
+                        <p style="text-align: left; margin-bottom: 0.5rem;"><strong style="color: var(--accent-blue);">Author:</strong> Gianfranco Piazzolla</p>
+                        <p style="text-align: left; margin-bottom: 0.5rem;"><strong style="color: var(--accent-blue);">GitHub repository:</strong> <a href="https://github.com/GianfrancoPiazzolla/EV-Master" target="_blank" style="color: var(--accent-emerald);">GianfrancoPiazzolla/EV-Master</a></p>
+                        <p style="text-align: left; margin-bottom: 0;"><strong style="color: var(--accent-blue);">License:</strong> Distributed under the MIT License. Feel free to use, modify, and share.</p>
                     </div>
                 </div>
             </div>
