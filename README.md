@@ -22,6 +22,15 @@ The tool is divided into intelligent modules that interact with your data:
 
 ---
 
+## 📐 Calculation Logic
+
+The app utilizes empirical correction factors for estimations:
+
+* **Efficiency**: Derived from the ratio of energy used (based on % drop and battery capacity) to the distance traveled.
+* **Environmental Impact**: The Trip Estimator applies penalties for low temperatures and high speeds to provide a realistic "worst-case" scenario.
+
+---
+
 ## 🛠️ Tech Stack
 
 Built to be fast, lightweight, and dependency-free:
@@ -46,19 +55,10 @@ git clone https://github.com/your-username/ev-master.git
 
 
 2. **Open the app**: Simply open `index.html` in any modern web browser.
-
+   
 ### Mobile Use (PWA)
 
 If hosted on a secure (HTTPS) server like GitHub Pages, you can select "Add to Home Screen" on your mobile device to use it as a full-screen standalone application.
-
----
-
-## 📐 Calculation Logic
-
-The app utilizes empirical correction factors for estimations:
-
-* **Efficiency**: Derived from the ratio of energy used (based on % drop and battery capacity) to the distance traveled.
-* **Environmental Impact**: The Trip Estimator applies penalties for low temperatures and high speeds to provide a realistic "worst-case" scenario.
 
 ---
 
