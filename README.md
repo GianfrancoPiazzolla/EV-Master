@@ -56,7 +56,7 @@ git clone https://github.com/your-username/ev-master.git
 
 2. **Open the app**: Simply open `index.html` in any modern web browser.
    
-### Mobile Use (PWA)
+### 📱 Mobile Use (PWA)
 
 If hosted on a secure (HTTPS) server like GitHub Pages, you can select "Add to Home Screen" on your mobile device to use it as a full-screen standalone application.
 
