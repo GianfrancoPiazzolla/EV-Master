@@ -7,9 +7,9 @@
 ## 🌟 Key Features
 
 ### 1. 📊 Trip Statistics & Consumption
-* **📉 Real-world Efficiency:** Calculates $kWh/100km$ and $km/kWh$ based on actual battery usage.
+* **📉 Real-world Efficiency:** Calculates $kWh/100Km$ and $Km/kWh$ based on actual battery usage.
 * **🛣️ Residual Autonomy:** Dynamically predicts remaining range based on the current drive's efficiency.
-* **⛽ ICE Comparison:** Compares electric drive costs and efficiency against Internal Combustion Engine (ICE) equivalents, including $km/L$.
+* **⛽ ICE Comparison:** Compares electric drive costs and efficiency against Internal Combustion Engine (ICE) equivalents, including $Km/L$.
 
 ### 2. 🔮 Trip Consumption Estimator
 Predicts energy requirements for future trips by applying environmental and behavioral factors to your baseline consumption:
@@ -40,7 +40,7 @@ The app utilizes empirical correction factors for estimations:
 
 The application calculates consumption using the following relationship:
 
-$$Consumption\ (kWh/100km) = \left( \frac{Used\ SoC\ \%}{100} \times Capacity \right) \div \frac{Distance}{100}$$
+$$Consumption\ (kWh/100Km) = \left( \frac{Used\ SoC\ \%}{100} \times Capacity \right) \div \frac{Distance}{100}$$
 
 ## ⚙️ Technical Overview
 
