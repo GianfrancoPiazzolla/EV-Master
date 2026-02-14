@@ -72,4 +72,4 @@ Distributed under the **MIT License**. Feel free to use, modify, and share.
 ---
 
 **Developed for the sustainable mobility community.**
-*If you find this tool helpful, please leave a ⭐!*
+*If you find this tool helpful, please leave a ⭐!* 😉
