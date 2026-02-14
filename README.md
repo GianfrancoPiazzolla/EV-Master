@@ -67,7 +67,7 @@ The application is built as a **Progressive Web App (PWA)** using a lightweight,
 
 ## 📄 License
 
-Distributed under the **MIT License**. Feel free to use, modify, and share.
+This project is distributed under the **MIT License**. Feel free to use, modify, and share.
 
 ---
 
