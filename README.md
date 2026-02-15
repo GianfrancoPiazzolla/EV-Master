@@ -1,4 +1,4 @@
-# EV Master: web-based calculator Electric Vehicle owners 🚗⚡
+# EV Master: web-based calculator for Electric Vehicle owners 🚗⚡
 
 **EV Master** is a sleek, professional web-based calculator designed for Battery Electric Vehicle (BEV) owners. It provides real-time insights into driving efficiency, trip estimation, and charging costs through a modern, responsive "dark-mode" dashboard.
 
