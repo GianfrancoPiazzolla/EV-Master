@@ -609,7 +609,7 @@ input[type="range"]::-webkit-slider-thumb {
                             Calculates charging time and cost. Doesn't account for charging curve (assumes linear speed).
                         </p>
                          <div class="input-group">
-                            <label for="chargePower">Charging power</label>
+                            <label for="chargePower">Average charging power</label>
                             <div class="input-wrapper"><input type="number" id="chargePower" value="11" min="1" max="350" step="0.1"><span>kW</span></div>
                         <input type="range" id="chargePowerRange" value="11" min="1" max="350" step="0.1">
                         </div>
@@ -623,6 +623,11 @@ input[type="range"]::-webkit-slider-thumb {
                             <div class="input-wrapper"><input type="number" id="chargeTargetSoc" value="80" min="0" max="100"><span>%</span></div>
                         <input type="range" id="chargeTargetSocRange" value="80" min="0" max="100">
                         </div>
+						<div class="input-group">
+							<label for="transferEfficiency">Energy transfer efficiency</label>
+							<div class="input-wrapper"><input type="number" id="transferEfficiency" value="95" min="70" max="100" step="1"><span>%</span></div>
+						<input type="range" id="transferEfficiencyRange" value="95" min="70" max="100" step="1">
+						</div>
                         <div id="charging-calculator-results" class="details-grid" style="margin-top: 1.5rem;"></div>
                     </div>
                 </div>
@@ -697,7 +702,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Trip estimator
         tripDistance: 100, externalTemp: 20, averageSpeed: 90, useHeatingAc: false,
         // Charging calculator
-        chargePower: 11, chargeStartSoc: 20, chargeTargetSoc: 80,
+        chargePower: 11, chargeStartSoc: 20, chargeTargetSoc: 80, transferEfficiency: 95
     };
     let baselineConsumption = null; // Stores kWh/100km from main calculator
 
@@ -712,6 +717,7 @@ document.addEventListener('DOMContentLoaded', () => {
             averageSpeed: document.getElementById('averageSpeed'), useHeatingAc: document.getElementById('useHeatingAc'),
             chargePower: document.getElementById('chargePower'), chargeStartSoc: document.getElementById('chargeStartSoc'),
             chargeTargetSoc: document.getElementById('chargeTargetSoc'),
+			transferEfficiency: document.getElementById('transferEfficiency'),
         },
         ranges: {
             startBattery: document.getElementById('startBatteryRange'), currentBattery: document.getElementById('currentBatteryRange'),
@@ -722,6 +728,7 @@ document.addEventListener('DOMContentLoaded', () => {
             averageSpeed: document.getElementById('averageSpeedRange'),
             chargePower: document.getElementById('chargePowerRange'), chargeStartSoc: document.getElementById('chargeStartSocRange'),
             chargeTargetSoc: document.getElementById('chargeTargetSocRange'),
+			transferEfficiency: document.getElementById('transferEfficiencyRange'),
         },
         battery: {
             level: document.getElementById('battery-level'), percentageLabel: document.getElementById('battery-percentage-label'),
@@ -849,22 +856,30 @@ document.addEventListener('DOMContentLoaded', () => {
         };
     };
 
-    const calculateCharging = () => {
-        const { chargeStartSoc, chargeTargetSoc, chargePower, batteryCapacity, kwhPrice } = state;
-        if (chargeTargetSoc <= chargeStartSoc || chargePower <= 0) return null;
+	const calculateCharging = () => {
+		const { chargeStartSoc, chargeTargetSoc, chargePower, batteryCapacity, kwhPrice, transferEfficiency } = state;
+		if (chargeTargetSoc <= chargeStartSoc || chargePower <= 0 || transferEfficiency <= 0) return null;
 
-        const kwhNeeded = ((chargeTargetSoc - chargeStartSoc) / 100) * batteryCapacity;
-        const timeHours = kwhNeeded / chargePower;
-        const totalMinutes = Math.round(timeHours * 60);
-        const hours = Math.floor(totalMinutes / 60);
-        const minutes = totalMinutes % 60;
+		// 1. Energy actually stored in the battery
+		const kwhAdded = ((chargeTargetSoc - chargeStartSoc) / 100) * batteryCapacity;
+		
+		// 2. Energy drawn from the station (Transferred Energy)
+		const kwhTransferred = kwhAdded / (transferEfficiency / 100);
 
-        return {
-            kwhAdded: kwhNeeded.toFixed(2),
-            cost: (kwhNeeded * kwhPrice).toFixed(2),
-            time: `${hours}h ${minutes}m`,
-        };
-    };
+		// 3. Time calculation (Based on the power delivered by the station)
+		const timeHours = kwhTransferred / chargePower;
+		const totalMinutes = Math.round(timeHours * 60);
+		const hours = Math.floor(totalMinutes / 60);
+		const minutes = totalMinutes % 60;
+
+		return {
+			kwhAdded: kwhAdded.toFixed(2),
+			kwhTransferred: kwhTransferred.toFixed(2),
+			chargedCost: (kwhAdded * kwhPrice).toFixed(2),
+			transferredCost: (kwhTransferred * kwhPrice).toFixed(2),
+			time: `${hours}h ${minutes}m`,
+		};
+	};
 
     // --- UI UPDATES ---
     const updateUI = () => {
@@ -915,14 +930,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateChargingCalculatorUI = () => {
         const res = calculateCharging();
-        if (res) {
-             DOMElements.results.charging.innerHTML = `
-                <div class="details-item"><p class="label">Time Needed</p><p class="value blue">${res.time} <span class="unit"></span></p></div>
-                <div class="details-item"><p class="label">Energy Added</p><p class="value green">${res.kwhAdded} <span class="unit">kWh</span></p></div>
-                <div class="details-item"><p class="label">Cost</p><p class="value yellow">${res.cost} <span class="unit">€</span></p></div>`;
-        } else {
-             DOMElements.results.charging.innerHTML = `<div class="no-results" style="grid-column: 1 / -1;"><p>Enter valid data (Target % > Start %)</p></div>`;
-        }
+		if (res) {
+				 DOMElements.results.charging.innerHTML = `
+					<div class="details-item"><p class="label">Time Needed</p><p class="value blue">${res.time}</p></div>
+					<div class="details-item"><p class="label">Energy Added</p><p class="value green">${res.kwhAdded} <span class="unit">kWh</span></p></div>
+					<div class="details-item"><p class="label">Energy Transferred</p><p class="value yellow">${res.kwhTransferred} <span class="unit">kWh</span></p></div>
+					<div class="details-item"><p class="label">Charge Energy Cost</p><p class="value white">${res.chargedCost} <span class="unit">€</span></p></div>
+					<div class="details-item"><p class="label">Transfer Energy Cost</p><p class="value red">${res.transferredCost} <span class="unit">€</span></p></div>`;
+		} else {
+			 DOMElements.results.charging.innerHTML = `<div class="no-results" style="grid-column: 1 / -1;"><p>Enter valid data (Target % > Start %)
+			 </p></div>`;
+		}
     };
 
     // --- BINDING AND INITIALIZATION ---
