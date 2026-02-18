@@ -19,7 +19,7 @@ Predicts energy requirements for future trips by applying environmental and beha
 
 ### 3. 🔌 Charging Calculator
 * **⏱️ Time Estimation:** Estimates the duration required to reach a target SoC based on charger power ($kW$).
-* **💰 Cost Projection:** Calculates the total cost of a charging session based on your specific energy price.
+* **💰 Cost Projection:** Calculates the total cost of a charging session based on your specific energy price, taking into account the energy transfer efficiency, too.
 
 ### 4. 📂 Vehicle Profiles & Persistence
 * **🚗 Custom Presets:** Save and manage multiple vehicle profiles (e.g., Battery Capacity) to quickly switch between different EVs.
