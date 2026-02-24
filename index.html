@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -22,6 +22,20 @@
     --accent-emerald: #34d399; /* emerald-400 */
     --accent-red: #f87171; /* red-400 */
     --accent-amber: #fbbf24; /* amber-500 */
+    --input-bg: #1e293b80;
+}
+
+[data-theme="light"] {
+    --bg-dark: #d8e9ff; /* slate-300 (Darker for better contrast) */
+    --bg-card: #ffffff;
+    --border-color: #64748b; /* slate-500 (Much darker borders) */
+    --text-light: #0f172a; /* slate-900 */
+    --text-muted: #1e293b; /* slate-800 (High contrast text) */
+    --accent-blue: #1d4ed8; /* blue-700 */
+    --accent-emerald: #047857; /* emerald-700 */
+    --accent-red: #b91c1c; /* red-700 */
+    --accent-amber: #b45309; /* amber-700 */
+    --input-bg: #d8e9ff; /* slate-200 */
 }
 
 body {
@@ -34,15 +48,19 @@ body {
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 .container {
     width: 100%;
     max-width: 1024px;
+    position: relative;
 }
 
 header {
-    text-align: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Vertically centered */
     margin-bottom: 2rem;
 }
 
@@ -54,6 +72,23 @@ header h1 {
     background-clip: text;
     color: transparent;
     margin: 0;
+    line-height: 1; /* Better vertical alignment */
+}
+
+.theme-toggle {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    color: var(--text-light);
+    box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+    transition: all 0.2s;
 }
 
 .grid-container {
@@ -67,13 +102,10 @@ header h1 {
         grid-template-columns: 5fr 7fr;
         align-items: start;
     }
-    header {
-        text-align: left;
-    }
 }
 
 .card {
-    background-color: #0d1425e0;
+    background-color: var(--bg-card);
     backdrop-filter: blur(20px);
     border: 1px solid var(--border-color);
     border-radius: 2rem;
@@ -107,8 +139,8 @@ header h1 {
 
 .input-wrapper input[type="number"] {
     width: 100%;
-    background-color: #1e293b80;
-    border: 1px solid #334155;
+    background-color: var(--input-bg);
+    border: 1px solid var(--border-color);
     color: var(--text-light);
     border-radius: 0.75rem;
     padding: 0.75rem 1rem;
@@ -136,7 +168,7 @@ input[type="range"] {
     -webkit-appearance: none;
     appearance: none;
     height: 6px;
-    background-color: #334155;
+    background-color: var(--border-color);
     border-radius: 3px;
     cursor: pointer;
     margin-top: 0.5rem;
@@ -263,7 +295,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .details-item {
-    background-color: #02061766;
+    background-color: var(--input-bg);
     padding: 1rem;
     border-radius: 1rem;
     text-align: left;
@@ -304,7 +336,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 .no-results {
     padding: 2rem 1rem;
-    background-color: #1e293b33;
+    background-color: var(--input-bg);
     border-radius: 1rem;
     border: 1px dashed var(--border-color);
     color: var(--text-muted);
@@ -328,7 +360,7 @@ input[type="range"]::-webkit-slider-thumb {
 }
 
 .calc-display {
-    background: #1e293b80;
+    background: var(--input-bg);
     padding: 1rem;
     border-radius: 0.75rem;
     text-align: right;
@@ -368,14 +400,14 @@ input[type="range"]::-webkit-slider-thumb {
     transition: all 0.2s;
 }
 
-.btn:hover { background: #1e293b; }
+.btn:hover { background: var(--input-bg); }
 .btn:active { transform: scale(0.95); }
-.btn-accent { background: var(--accent-blue); color: var(--bg-dark); }
-.btn-accent:hover { background: #93c5fd; }
+.btn-accent { background: var(--accent-blue); color: #ffffff; }
+.btn-accent:hover { opacity: 0.9; }
 .btn-op { color: var(--accent-amber); }
 
 .tape-container {
-    background: #02061780;
+    background: var(--input-bg);
     border-radius: 1rem;
     padding: 1rem;
     border: 1px solid var(--border-color);
@@ -406,7 +438,7 @@ input[type="range"]::-webkit-slider-thumb {
     font-family: 'Courier New', Courier, monospace;
     font-size: 0.9rem;
     padding-bottom: 0.5rem;
-    border-bottom: 1px solid #1e293b44;
+    border-bottom: 1px solid var(--border-color);
 }
 
 .tape-entry .expr { color: var(--text-muted); }
@@ -454,17 +486,19 @@ input[type="range"]::-webkit-slider-thumb {
 
     </style>
 </head>
-<body>
+<body data-theme="dark">
     <div class="container">
         <header>
             <h1>EV MASTER</h1>
+            <button class="theme-toggle" id="themeToggle">
+                <span id="themeIcon">☀️</span>
+            </button>
         </header>
-
 
         <main>
             <div class="card input-card">
                     <div class="presets-container" style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1.5rem; border-bottom: 1px solid var(--border-color);">
-                        <select id="vehiclePresets" style="width: 100%; background-color: #1e293b80; border: 1px solid #334155; color: var(--text-light); border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 1rem;"></select>
+                        <select id="vehiclePresets" style="width: 100%; background-color: var(--input-bg); border: 1px solid var(--border-color); color: var(--text-light); border-radius: 0.75rem; padding: 0.75rem 1rem; font-size: 1rem;"></select>
                         <button id="savePresetBtn" class="btn" style="padding: 0.75rem 1rem; white-space: nowrap;">Save As</button>
                         <button id="deletePresetBtn" class="btn btn-op" style="padding: 0.75rem 1rem;">Delete</button>
                     </div>
@@ -683,7 +717,7 @@ input[type="range"]::-webkit-slider-thumb {
                         <p style="text-align: left; margin-bottom: 0.5rem;"><strong style="color: var(--accent-blue);">Author:</strong> Gianfranco Piazzolla</p>
                         <p style="text-align: left; margin-bottom: 0.5rem;"><strong style="color: var(--accent-blue);">GitHub repository:</strong> <a href="https://github.com/GianfrancoPiazzolla/EV-Master" target="_blank" style="color: var(--accent-emerald);">EV Master</a></p>
                         <p style="text-align: left; margin-bottom: 0;"><strong style="color: var(--accent-blue);">License:</strong> Distributed under the MIT License. Feel free to use, modify, and share.</p>
-                        <p style="text-align: left; margin-bottom: 0; font-size: 14px; font-style: italic;">Developed for the sustainable mobility community. If you find this tool helpful, please leave a star on GitHub!</p>
+                        <p style="text-align: left; margin-bottom: 0; font-size: 14px; font-style: italic;">Developed for the sustainable mobility community. If you find this tool helpful, please leave a ⭐ on GitHub!</p>
                     </div>
                 </div>
             </div>
@@ -702,7 +736,9 @@ document.addEventListener('DOMContentLoaded', () => {
         // Trip estimator
         tripDistance: 100, externalTemp: 20, averageSpeed: 90, useHeatingAc: false,
         // Charging calculator
-        chargePower: 11, chargeStartSoc: 20, chargeTargetSoc: 80, transferEfficiency: 95
+        chargePower: 11, chargeStartSoc: 20, chargeTargetSoc: 80, transferEfficiency: 95,
+        // Theme
+        theme: 'dark'
     };
     let baselineConsumption = null; // Stores kWh/100km from main calculator
 
@@ -753,12 +789,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const saved = localStorage.getItem('evMasterState');
         if (saved) {
             const loadedState = JSON.parse(saved);
-            // Ensure presets are not overwritten if they don't exist in old saves
             if (!loadedState.presets) loadedState.presets = {};
             Object.assign(state, loadedState);
         }
     };
     
+    // --- THEME MANAGEMENT ---
+    const initTheme = () => {
+        const toggle = document.getElementById('themeToggle');
+        const icon = document.getElementById('themeIcon');
+        
+        const applyTheme = (theme) => {
+            document.body.setAttribute('data-theme', theme);
+            icon.textContent = theme === 'dark' ? '☀️' : '🌙';
+            state.theme = theme;
+            saveState();
+        };
+
+        applyTheme(state.theme);
+
+        toggle.addEventListener('click', () => {
+            const newTheme = state.theme === 'dark' ? 'light' : 'dark';
+            applyTheme(newTheme);
+        });
+    };
+
     // --- PRESET MANAGEMENT ---
     const initPresets = () => {
         const { select, saveBtn, deleteBtn } = DOMElements.presets;
@@ -777,7 +832,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (name && name.trim()) {
             state.presets[name.trim()] = {
                 batteryCapacity: state.batteryCapacity,
-                fuelConsumption: state.fuelConsumption, // Example of another vehicle-specific param
+                fuelConsumption: state.fuelConsumption, 
             };
             state.selectedPreset = name.trim();
             initPresets();
@@ -793,7 +848,7 @@ document.addEventListener('DOMContentLoaded', () => {
             state.selectedPreset = name;
             updateUI();
             saveState();
-            bindInputsToState(); // Re-sync inputs
+            bindInputsToState(); 
         }
     };
 
@@ -821,7 +876,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const energyUsedKwh = (usedPercentage / 100) * batteryCapacity;
         const consumptionKwh100km = (energyUsedKwh / kilometersTraveled) * 100;
         
-        baselineConsumption = consumptionKwh100km; // Store for estimator
+        baselineConsumption = consumptionKwh100km; 
 
         const efficiencyKmKwh = kilometersTraveled / energyUsedKwh;
         const tripCost = energyUsedKwh * kwhPrice;
@@ -839,10 +894,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const { tripDistance, externalTemp, averageSpeed, useHeatingAc, batteryCapacity, currentBattery } = state;
         
-        // Simplified adjustment factors
         const tempFactor = externalTemp < 20 ? 1 + (20 - externalTemp) * 0.015 : 1 - (externalTemp - 20) * 0.005;
         const speedFactor = averageSpeed > 90 ? 1 + Math.pow((averageSpeed - 90) / 50, 2) : 1 - Math.pow((90 - averageSpeed) / 100, 1.5);
-        const heatingFactor = useHeatingAc ? 1.15 : 1; // 15% penalty for AC/Heating
+        const heatingFactor = useHeatingAc ? 1.15 : 1; 
         
         const adjustedConsumption = baselineConsumption * tempFactor * speedFactor * heatingFactor;
         const estimatedKwh = adjustedConsumption * (tripDistance / 100);
@@ -860,13 +914,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		const { chargeStartSoc, chargeTargetSoc, chargePower, batteryCapacity, kwhPrice, transferEfficiency } = state;
 		if (chargeTargetSoc <= chargeStartSoc || chargePower <= 0 || transferEfficiency <= 0) return null;
 
-		// 1. Energy actually stored in the battery
 		const kwhAdded = ((chargeTargetSoc - chargeStartSoc) / 100) * batteryCapacity;
-		
-		// 2. Energy drawn from the station (Transferred Energy)
 		const kwhTransferred = kwhAdded / (transferEfficiency / 100);
 
-		// 3. Time calculation (Based on the power delivered by the station)
 		const timeHours = kwhTransferred / chargePower;
 		const totalMinutes = Math.round(timeHours * 60);
 		const hours = Math.floor(totalMinutes / 60);
@@ -883,7 +933,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- UI UPDATES ---
     const updateUI = () => {
-        // Main Results
         const { currentBattery, minBattery, startBattery } = state;
         DOMElements.battery.level.style.width = `${currentBattery}%`;
         let color = currentBattery <= minBattery ? 'var(--accent-red)' : (currentBattery <= 20 ? 'var(--accent-amber)' : 'var(--accent-emerald)');
@@ -910,7 +959,6 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.results.stats.innerHTML = '';
         }
         
-        // Update other calculators that depend on main results
         updateTripEstimatorUI();
         updateChargingCalculatorUI();
     };
@@ -945,7 +993,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- BINDING AND INITIALIZATION ---
     const bindInputsToState = () => {
-        // Bind main form inputs
         Object.keys(DOMElements.inputs).forEach(key => {
             const input = DOMElements.inputs[key];
             if (!input) return;
@@ -977,8 +1024,8 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     };
 
-    // Initial Load
     loadState();
+    initTheme();
     initPresets();
     syncStateToInputs();
     bindInputsToState();
@@ -995,11 +1042,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (clickedTab.classList.contains('active')) return;
 
-            // Deactivate all tabs and content
             tabContainer.querySelectorAll('.tab-btn').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
 
-            // Activate clicked tab and its content
             clickedTab.classList.add('active');
             const targetContent = document.getElementById('tab-' + clickedTab.dataset.tab);
             if (targetContent) {
