@@ -299,6 +299,7 @@ input[type="range"]::-webkit-slider-thumb {
     padding: 1rem;
     border-radius: 1rem;
     text-align: left;
+    border-bottom: 4px solid transparent;
 }
 
 .details-item .label {
@@ -333,6 +334,7 @@ input[type="range"]::-webkit-slider-thumb {
 .value.green { color: var(--accent-emerald); }
 .value.yellow { color: var(--accent-amber); }
 .value.red { color: var(--accent-red); }
+.value.white { color: var(--text-light); }
 
 .no-results {
     padding: 2rem 1rem;
@@ -863,6 +865,20 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
+    // --- HELPERS ---
+    const applyBorderColors = (gridId) => {
+        const grid = document.getElementById(gridId);
+        if (!grid) return;
+        const items = grid.querySelectorAll('.details-item');
+        items.forEach(item => {
+            const valEl = item.querySelector('.value');
+            if (valEl) {
+                const color = window.getComputedStyle(valEl).color;
+                item.style.borderBottomColor = color;
+            }
+        });
+    };
+
     // --- CALCULATORS ---
     const calculateMainResults = () => {
         const { startBattery, currentBattery, kilometersTraveled, minBattery, batteryCapacity, kwhPrice, fuelPrice, fuelConsumption } = state;
@@ -955,6 +971,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="details-item"><p class="label">Equivalent ICE efficiency</p><p class="value blue">${res.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p></div>
                 <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value blue">${res.iceEquivalentKm.toFixed(1)} <span class="unit">Km</span></p></div>
                 <div class="details-item"><p class="label">Km per %</p><p class="value white">${res.kmPerPercent.toFixed(2)} <span class="unit">Km</span></p></div>`;
+            applyBorderColors('stats-grid');
         } else {
             DOMElements.results.main.innerHTML = `<div class="no-results"><p>Enter valid data (Start % > Current %)</p></div>`;
             DOMElements.results.stats.innerHTML = '';
@@ -972,6 +989,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="details-item"><p class="label">Estimated kWh needed</p><p class="value red">${res.estimatedKwh} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">SOC Used</p><p class="value yellow">${res.socUsed} <span class="unit">%</span></p></div>
                 <div class="details-item"><p class="label">Estimated Final SOC</p><p class="value green">${res.finalSoc} <span class="unit">%</span></p></div>`;
+            applyBorderColors('trip-estimator-results');
         } else {
             DOMElements.results.estimator.innerHTML = `<div class="no-results" style="grid-column: 1 / -1;"><p>Calculate real consumption first by filling the main form.</p></div>`;
         }
@@ -986,6 +1004,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					<div class="details-item"><p class="label">Energy Transferred</p><p class="value yellow">${res.kwhTransferred} <span class="unit">kWh</span></p></div>
 					<div class="details-item"><p class="label">Charge Energy Cost</p><p class="value white">${res.chargedCost} <span class="unit">€</span></p></div>
 					<div class="details-item"><p class="label">Transfer Energy Cost</p><p class="value red">${res.transferredCost} <span class="unit">€</span></p></div>`;
+            applyBorderColors('charging-calculator-results');
 		} else {
 			 DOMElements.results.charging.innerHTML = `<div class="no-results" style="grid-column: 1 / -1;"><p>Enter valid data (Target % > Start %)
 			 </p></div>`;
