@@ -962,15 +962,15 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res) {
             DOMElements.results.main.innerHTML = `<div class="results-data"><span class="value">${Math.round(res.remainingRange)}</span><span class="unit">Km</span></div>`;
             DOMElements.results.stats.innerHTML = `
+                <div class="details-item"><p class="label">Residual kWh at minimum SoC</p><p class="value green">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Drive consumption</p><p class="value red">${res.consumptionKwh100km.toFixed(2)} <span class="unit">kWh/100Km</span></p></div>
                 <div class="details-item"><p class="label">kWh Consumed</p><p class="value red">${res.energyUsedKwh.toFixed(2)} <span class="unit">kWh</span></p></div>
-                <div class="details-item"><p class="label">Residual kWh at minimum SoC</p><p class="value green">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">BEV efficiency</p><p class="value blue">${res.efficiencyKmKwh.toFixed(2)} <span class="unit">Km/kWh</span></p></div>
+                <div class="details-item"><p class="label">Km per %</p><p class="value blue">${res.kmPerPercent.toFixed(2)} <span class="unit">Km</span></p></div>
                 <div class="details-item"><p class="label">Drive cost</p><p class="value yellow">${res.tripCost.toFixed(2)} <span class="unit">€</span></p></div>
                 <div class="details-item"><p class="label">Drive cost per Km</p><p class="value yellow">${res.costPerKm.toFixed(3)} <span class="unit">€/Km</span></p></div>
-                <div class="details-item"><p class="label">Equivalent ICE efficiency</p><p class="value blue">${res.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p></div>
-                <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value blue">${res.iceEquivalentKm.toFixed(1)} <span class="unit">Km</span></p></div>
-                <div class="details-item"><p class="label">Km per %</p><p class="value white">${res.kmPerPercent.toFixed(2)} <span class="unit">Km</span></p></div>`;
+                <div class="details-item"><p class="label">Equivalent ICE efficiency</p><p class="value green">${res.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p></div>
+                <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value green">${res.iceEquivalentKm.toFixed(1)} <span class="unit">Km</span></p></div>`;
             applyBorderColors('stats-grid');
         } else {
             DOMElements.results.main.innerHTML = `<div class="no-results"><p>Enter valid data (Start % > Current %)</p></div>`;
@@ -987,7 +987,7 @@ document.addEventListener('DOMContentLoaded', () => {
             DOMElements.results.estimator.innerHTML = `
                 <div class="details-item"><p class="label">Adjusted Consumption</p><p class="value red">${res.adjustedConsumption} <span class="unit">kWh/100km</span></p></div>
                 <div class="details-item"><p class="label">Estimated kWh needed</p><p class="value red">${res.estimatedKwh} <span class="unit">kWh</span></p></div>
-                <div class="details-item"><p class="label">SOC Used</p><p class="value yellow">${res.socUsed} <span class="unit">%</span></p></div>
+                <div class="details-item"><p class="label">Percentage Used</p><p class="value yellow">${res.socUsed} <span class="unit">%</span></p></div>
                 <div class="details-item"><p class="label">Estimated Final SOC</p><p class="value green">${res.finalSoc} <span class="unit">%</span></p></div>`;
             applyBorderColors('trip-estimator-results');
         } else {
@@ -1002,7 +1002,7 @@ document.addEventListener('DOMContentLoaded', () => {
 					<div class="details-item"><p class="label">Time Needed</p><p class="value blue">${res.time}</p></div>
 					<div class="details-item"><p class="label">Energy Added</p><p class="value green">${res.kwhAdded} <span class="unit">kWh</span></p></div>
 					<div class="details-item"><p class="label">Energy Transferred</p><p class="value yellow">${res.kwhTransferred} <span class="unit">kWh</span></p></div>
-					<div class="details-item"><p class="label">Charge Energy Cost</p><p class="value white">${res.chargedCost} <span class="unit">€</span></p></div>
+					<div class="details-item"><p class="label">Charge Energy Cost</p><p class="value red">${res.chargedCost} <span class="unit">€</span></p></div>
 					<div class="details-item"><p class="label">Transfer Energy Cost</p><p class="value red">${res.transferredCost} <span class="unit">€</span></p></div>`;
             applyBorderColors('charging-calculator-results');
 		} else {
