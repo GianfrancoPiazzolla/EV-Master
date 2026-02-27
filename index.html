@@ -13,15 +13,16 @@
     <title>EV Master</title>
     <style>
 :root {
-    --bg-dark: #020617; /* slate-950 */
-    --bg-card: #0f172a; /* slate-900 */
-    --border-color: #1e293b; /* slate-800 */
-    --text-light: #e2e8f0; /* slate-200 */
-    --text-muted: #64748b; /* slate-500 */
-    --accent-blue: #60a5fa; /* blue-400 */
-    --accent-emerald: #34d399; /* emerald-400 */
-    --accent-red: #f87171; /* red-400 */
-    --accent-amber: #fbbf24; /* amber-500 */
+    --bg-dark: #020617;
+    --bg-card: #0f172a;
+    --border-color: #1e293b;
+    --text-light: #e2e8f0;
+    --text-muted: #64748b;
+    --accent-blue: #60a5fa;
+    --accent-emerald: #34d399;
+    --accent-red: #f87171;
+    --accent-amber: #fbbf24;
+    --accent-purple: #fd78d1;
     --input-bg: #1e293b80;
 }
 
@@ -35,6 +36,7 @@
     --accent-emerald: #047857;
     --accent-red: #b91c1c;
     --accent-amber: #b45309;
+    --accent-purple: #ff62cb;
     --input-bg: #f5f5f5;
 }
 
@@ -334,6 +336,7 @@ input[type="range"]::-webkit-slider-thumb {
 .value.green { color: var(--accent-emerald); }
 .value.yellow { color: var(--accent-amber); }
 .value.red { color: var(--accent-red); }
+.value.purple { color: var(--accent-purple); }
 .value.white { color: var(--text-light); }
 
 .no-results {
@@ -963,16 +966,16 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res) {
             DOMElements.results.main.innerHTML = `<div class="results-data"><span class="value">${Math.round(res.remainingRange)}</span><span class="unit">Km</span></div>`;
             DOMElements.results.stats.innerHTML = `
-                <div class="details-item"><p class="label">Residual kWh at minimum SoC</p><p class="value red">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p></div>
+                <div class="details-item"><p class="label">Residual kWh at minimum SoC</p><p class="value green">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Drive consumption</p><p class="value red">${res.consumptionKwh100km.toFixed(2)} <span class="unit">kWh/100Km</span></p></div>
                 <div class="details-item"><p class="label">kWh Consumed</p><p class="value red">${res.energyUsedKwh.toFixed(2)} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">BEV efficiency</p><p class="value blue">${res.efficiencyKmKwh.toFixed(2)} <span class="unit">Km/kWh</span></p></div>
                 <div class="details-item"><p class="label">Km per %</p><p class="value blue">${res.kmPerPercent.toFixed(2)} <span class="unit">Km</span></p></div>
                 <div class="details-item"><p class="label">Drive cost</p><p class="value yellow">${res.tripCost.toFixed(2)} <span class="unit">€</span></p></div>
                 <div class="details-item"><p class="label">Drive cost per Km</p><p class="value yellow">${res.costPerKm.toFixed(3)} <span class="unit">€/Km</span></p></div>
-                <div class="details-item"><p class="label">Equivalent ICE efficiency</p><p class="value green">${res.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p></div>
-                <div class="details-item"><p class="label">Equivalent ICE Cost</p><p class="value green">${res.equivalentIceCostPerKwh.toFixed(2)} <span class="unit">€/kWh</span></p></div>
-                <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value green">${res.iceEquivalentKm.toFixed(1)} <span class="unit">Km</span></p></div>`;
+                <div class="details-item"><p class="label">Equivalent ICE efficiency</p><p class="value purple">${res.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p></div>
+                <div class="details-item"><p class="label">Equivalent ICE Cost</p><p class="value purple">${res.equivalentIceCostPerKwh.toFixed(2)} <span class="unit">€/kWh</span></p></div>
+                <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value purple">${res.iceEquivalentKm.toFixed(1)} <span class="unit">Km</span></p></div>`;
             applyBorderColors('stats-grid');
         } else {
             DOMElements.results.main.innerHTML = `<div class="no-results"><p>Enter valid data (Start % > Current %)</p></div>`;
