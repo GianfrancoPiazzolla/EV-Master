@@ -1004,11 +1004,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = calculateCharging();
 		if (res) {
 				 DOMElements.results.charging.innerHTML = `
-					<div class="details-item"><p class="label">Charging time</p><p class="value blue">${res.time}</p></div>
 					<div class="details-item"><p class="label">Energy added</p><p class="value green">${res.kwhAdded} <span class="unit">kWh</span></p></div>
 					<div class="details-item"><p class="label">Energy drawn</p><p class="value yellow">${res.kwhTransferred} <span class="unit">kWh</span></p></div>
 					<div class="details-item"><p class="label">Charging cost</p><p class="value purple">${res.chargedCost} <span class="unit">€</span></p></div>
-					<div class="details-item"><p class="label">Withdrawal cost</p><p class="value red">${res.transferredCost} <span class="unit">€</span></p></div>`;
+					<div class="details-item"><p class="label">Withdrawal cost</p><p class="value red">${res.transferredCost} <span class="unit">€</span></p></div>
+					<div class="details-item"><p class="label">Charging time</p><p class="value blue">${res.time}</p></div>`;
             applyBorderColors('charging-calculator-results');
 		} else {
 			 DOMElements.results.charging.innerHTML = `<div class="no-results" style="grid-column: 1 / -1;"><p>Enter valid data (Target % > Start %)
