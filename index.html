@@ -990,9 +990,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = calculateTripEstimation();
         if(res) {
             DOMElements.results.estimator.innerHTML = `
-                <div class="details-item"><p class="label">Estimated adjusted consumption</p><p class="value red">${res.adjustedConsumption} <span class="unit">kWh/100km</span></p></div>
-                <div class="details-item"><p class="label">Estimated energy needed</p><p class="value purple">${res.estimatedKwh} <span class="unit">kWh</span></p></div>
-                <div class="details-item"><p class="label">Estimated battery needed</p><p class="value yellow">${res.socUsed} <span class="unit">%</span></p></div>
+                <div class="details-item"><p class="label">Estimated consumption</p><p class="value red">${res.adjustedConsumption} <span class="unit">kWh/100km</span></p></div>
+                <div class="details-item"><p class="label">Estimated energy need</p><p class="value purple">${res.estimatedKwh} <span class="unit">kWh</span></p></div>
+                <div class="details-item"><p class="label">Estimated battery need</p><p class="value yellow">${res.socUsed} <span class="unit">%</span></p></div>
                 <div class="details-item"><p class="label">Estimated final SoC</p><p class="value green">${res.finalSoc} <span class="unit">%</span></p></div>`;
             applyBorderColors('trip-estimator-results');
         } else {
