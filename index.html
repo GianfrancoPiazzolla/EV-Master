@@ -903,6 +903,7 @@ document.addEventListener('DOMContentLoaded', () => {
             costPerKm: tripCost / kilometersTraveled,
             iceEquivalentKm: (fuelPrice > 0 && fuelConsumption > 0) ? (tripCost / fuelPrice) * fuelConsumption : 0,
             equivalentEfficiency: (kwhPrice > 0 && isFinite(efficiencyKmKwh)) ? (fuelPrice / kwhPrice) * efficiencyKmKwh : 0,
+            equivalentIceCostPerKwh: (fuelConsumption > 0 && efficiencyKmKwh > 0) ? (fuelPrice / fuelConsumption) * efficiencyKmKwh : 0,
         };
     };
 
@@ -962,7 +963,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res) {
             DOMElements.results.main.innerHTML = `<div class="results-data"><span class="value">${Math.round(res.remainingRange)}</span><span class="unit">Km</span></div>`;
             DOMElements.results.stats.innerHTML = `
-                <div class="details-item"><p class="label">Residual kWh at minimum SoC</p><p class="value green">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p></div>
+                <div class="details-item"><p class="label">Residual kWh at minimum SoC</p><p class="value red">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Drive consumption</p><p class="value red">${res.consumptionKwh100km.toFixed(2)} <span class="unit">kWh/100Km</span></p></div>
                 <div class="details-item"><p class="label">kWh Consumed</p><p class="value red">${res.energyUsedKwh.toFixed(2)} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">BEV efficiency</p><p class="value blue">${res.efficiencyKmKwh.toFixed(2)} <span class="unit">Km/kWh</span></p></div>
@@ -970,6 +971,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="details-item"><p class="label">Drive cost</p><p class="value yellow">${res.tripCost.toFixed(2)} <span class="unit">€</span></p></div>
                 <div class="details-item"><p class="label">Drive cost per Km</p><p class="value yellow">${res.costPerKm.toFixed(3)} <span class="unit">€/Km</span></p></div>
                 <div class="details-item"><p class="label">Equivalent ICE efficiency</p><p class="value green">${res.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p></div>
+                <div class="details-item"><p class="label">Equivalent ICE Cost</p><p class="value green">${res.equivalentIceCostPerKwh.toFixed(2)} <span class="unit">€/kWh</span></p></div>
                 <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value green">${res.iceEquivalentKm.toFixed(1)} <span class="unit">Km</span></p></div>`;
             applyBorderColors('stats-grid');
         } else {
