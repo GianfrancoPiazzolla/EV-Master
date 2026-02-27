@@ -966,7 +966,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res) {
             DOMElements.results.main.innerHTML = `<div class="results-data"><span class="value">${Math.round(res.remainingRange)}</span><span class="unit">Km</span></div>`;
             DOMElements.results.stats.innerHTML = `
-                <div class="details-item"><p class="label">Residual energy at minimum SoC</p><p class="value green">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Overall driving consumption</p><p class="value red">${res.consumptionKwh100km.toFixed(2)} <span class="unit">kWh/100Km</span></p></div>
                 <div class="details-item"><p class="label">Overall energy consumed</p><p class="value red">${res.energyUsedKwh.toFixed(2)} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Overall driving efficiency</p><p class="value blue">${res.efficiencyKmKwh.toFixed(2)} <span class="unit">Km/kWh</span></p></div>
@@ -975,7 +974,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="details-item"><p class="label">Overall driving cost per Km</p><p class="value yellow">${res.costPerKm.toFixed(3)} <span class="unit">€/Km</span></p></div>
                 <div class="details-item"><p class="label">Equivalent ICE driving efficiency</p><p class="value purple">${res.equivalentEfficiency.toFixed(1)} <span class="unit">Km/L</span></p></div>
                 <div class="details-item"><p class="label">Equivalent ICE traveling cost</p><p class="value purple">${res.equivalentIceCostPerKwh.toFixed(2)} <span class="unit">€/kWh</span></p></div>
-                <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value purple">${res.iceEquivalentKm.toFixed(1)} <span class="unit">Km</span></p></div>`;
+                <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value purple">${res.iceEquivalentKm.toFixed(1)} <span class="unit">Km</span></p></div>
+				<div class="details-item"><p class="label">Residual energy at minimum SoC</p><p class="value green">${res.energyAtMinBuffer.toFixed(2)} <span class="unit">kWh</span></p></div>`;
+			
             applyBorderColors('stats-grid');
         } else {
             DOMElements.results.main.innerHTML = `<div class="no-results"><p>Enter valid data (Start % > Current %)</p></div>`;
