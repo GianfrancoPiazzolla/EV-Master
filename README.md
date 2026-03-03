@@ -52,7 +52,7 @@ All data is persisted locally in the browser via `localStorage`, so your vehicle
 | 🗺️ **Trip Estimator** | Projects future trip cost/SoC using temperature, speed & HVAC factors |
 | ⚡ **Charging Calculator** | Estimates time and cost for any SoC target and charger power |
 | 🏎️ **Speed vs Range Chart** | Canvas-drawn aerodynamic drag curve across speed intervals |
-| 🫀 **SoH Estimator** | Calculates State of Health from measured vs WLTP range with arc gauge |
+| 🏷️ **SoH Estimator** | Calculates State of Health from measured vs WLTP range with arc gauge |
 | 🌿 **CO₂ Comparison** | Computes EV vs ICE emissions using configurable grid intensity |
 | 📍 **Trip Log** | Persistent history of up to 50 logged trips with averages |
 | 🧮 **Quick Calculator** | Standalone calculator with history tape and SoC↔Km converter |
@@ -140,7 +140,7 @@ The **Autonomy** tab provides a visual and numerical representation of the curre
 
 **🎨 Animated Battery Visual:**
 - A horizontal battery widget fills proportionally to the current SoC percentage
-- 🟢 The fill color transitions dynamically: **green** (>30%) → **amber** (15–30%) → **red** (<15%)
+- The fill color transitions dynamically: **green** (>30%) → **amber** (15–30%) → **red** (<15%)
 - A **red dashed vertical marker** (`Buffer`) shows where the minimum SoC threshold is
 - A **blue dashed vertical marker** (`Start`) shows where the drive started
 - A large percentage label below updates in real time
