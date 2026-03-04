@@ -47,7 +47,7 @@ All data is persisted locally in the browser via `localStorage`, so your vehicle
 
 | 🏷️ Feature | 📝 Description |
 |---|---|
-| 📊 **Real Consumption Stats** | Calculates true kWh/100km from actual SoC delta and distance |
+| 📊 **Real Consumption Stats** | Calculates true kWh/100Km from actual SoC delta and distance |
 | 🔋 **Animated Battery Visual** | Live graphical battery bar with buffer and start markers |
 | 🗺️ **Trip Estimator** | Projects future trip cost/SoC using temperature, speed & HVAC factors |
 | ⚡ **Charging Calculator** | Estimates time and cost for any SoC target and charger power |
@@ -76,15 +76,15 @@ The left-hand panel (or top panel on mobile) is the primary data entry area. Eve
 |---|---|---|---|
 | 🟢 **Starting battery SoC** | 100% | 0–100% | Battery charge at the start of the recorded drive |
 | 🟡 **Current battery SoC** | 80% | 0–100% | Battery charge at the end of the recorded drive |
-| 📏 **Traveled distance** | 50 km | 0–500 km | Actual distance covered during the recorded drive |
+| 📏 **Traveled distance** | 50 Km | 0–500 Km | Actual distance covered during the recorded drive |
 | 🛡️ **Minimum SoC buffer** | 10% | 0–100% | Reserved charge level — never counted as usable range |
 | 🔋 **Usable battery capacity** | 75 kWh | 10–150 kWh | The usable (net) battery capacity of the vehicle |
-| 📄 **WLTP rated range** | 400 km | 50–1000 km | Manufacturer's official WLTP range — used for SoH and WLTP ratio |
+| 📄 **WLTP rated range** | 400 Km | 50–1000 Km | Manufacturer's official WLTP range — used for SoH and WLTP ratio |
 | 💶 **Electricity price** | 0.25 €/kWh | 0.01–1.50 €/kWh | Cost of electricity — used for all trip cost calculations |
 | ⛽ **Fuel price** | 1.70 €/L | 1.00–3.00 €/L | Petrol/diesel price for ICE cost equivalence comparisons |
-| 🚗 **ICE fuel efficiency** | 15 km/L | 5–40 km/L | Reference ICE vehicle efficiency for cost/CO₂ comparison |
+| 🚗 **ICE fuel efficiency** | 15 Km/L | 5–40 Km/L | Reference ICE vehicle efficiency for cost/CO₂ comparison |
 | 🌫️ **Grid CO₂ intensity** | 233 g/kWh | 0–900 g/kWh | Average CO₂ emissions per kWh from the electrical grid |
-| 💨 **ICE CO₂ emissions** | 120 g/km | 50–400 g/km | CO₂ output per km of the reference ICE vehicle |
+| 💨 **ICE CO₂ emissions** | 120 g/Km | 50–400 g/Km | CO₂ output per Km of the reference ICE vehicle |
 
 > ℹ️ **Validation:** The main calculator requires `startBattery > currentBattery` and `kilometersTraveled > 0`. If the inputs are invalid, all dependent tabs display a "no results" placeholder automatically.
 
@@ -96,10 +96,10 @@ The **Stats** tab is the primary output screen, displaying a grid of computed me
 
 Computed values shown:
 
-- **⚡ Consumption** — Real-world efficiency in `kWh/100km`, calculated as:  
+- **⚡ Consumption** — Real-world efficiency in `kWh/100Km`, calculated as:  
   `consumptionKwh100km = (energyUsedKwh / kilometersTraveled) × 100`
 
-- **🏁 Efficiency** — Inverse metric in `km/kWh`:  
+- **🏁 Efficiency** — Inverse metric in `Km/kWh`:  
   `efficiencyKmKwh = kilometersTraveled / energyUsedKwh`
 
 - **🔌 Energy used** — Actual kWh drawn from the battery:  
@@ -108,7 +108,7 @@ Computed values shown:
 - **💰 Trip cost** — Total electricity cost for the recorded drive:  
   `tripCost = energyUsedKwh × kwhPrice`
 
-- **📏 Cost per km** — Granular cost metric in `€/km`
+- **📏 Cost per Km** — Granular cost metric in `€/Km`
 
 - **🗺️ Remaining range** — Estimated distance drivable from current SoC down to the minimum buffer:  
   `remainingRange = (currentBattery - minBattery) × kmPerPercent`
@@ -119,16 +119,16 @@ Computed values shown:
 - **📊 WLTP ratio** — How your real range compares to the manufacturer's claim:  
   `wltpRatio = (fullRangeReal / wltpRange) × 100%`
 
-- **⛽ ICE equivalent cost** — How many km an ICE car could travel for the same money
+- **⛽ ICE equivalent cost** — How many Km an ICE car could travel for the same money
 
-- **📐 Equivalent ICE efficiency** — EV efficiency expressed as equivalent `L/100km`:  
+- **📐 Equivalent ICE efficiency** — EV efficiency expressed as equivalent `L/100Km`:  
   `equivalentEfficiency = (fuelPrice / kwhPrice) × efficiencyKmKwh`
 
 - **💸 ICE cost per kWh equivalent** — Effective cost of petrol per kWh of energy
 
 - **🔋 Buffer energy** — kWh stored below the minimum SoC threshold
 
-- **📍 km per % SoC** — Granular consumption indicator
+- **📍 Km per % SoC** — Granular consumption indicator
 
 A **📋 Copy Summary** button exports all key metrics as a formatted plain-text block directly to the clipboard for easy sharing.
 
@@ -158,17 +158,17 @@ The **Trip Estimator** predicts what a *future* trip will cost and consume, usin
 | 🏷️ Factor | 📐 Formula | 📝 Notes |
 |---|---|---|
 | 🌡️ **Temperature** | `1 + (20 - T) × 0.015` for T < 20°C; `1 - (T - 20) × 0.005` for T > 20°C | Cold weather increases consumption; hot weather slightly reduces it |
-| 🏎️ **Speed** | Quadratic penalty above 90 km/h; sub-linear benefit below 90 km/h | Models aerodynamic drag increase at high speed |
+| 🏎️ **Speed** | Quadratic penalty above 90 Km/h; sub-linear benefit below 90 Km/h | Models aerodynamic drag increase at high speed |
 | ❄️ **HVAC (Heating/AC)** | `× 1.15` when enabled | Adds 15% consumption overhead when climate control is active |
 
 **Inputs for the estimator:**
-- 📏 Trip distance (0–1000 km)
+- 📏 Trip distance (0–1000 Km)
 - 🌡️ External temperature (−20°C to +50°C)
-- 🚗 Average speed (10–250 km/h)
+- 🚗 Average speed (10–250 Km/h)
 - ❄️ Use Heating/AC checkbox
 
 **Outputs:**
-- ⚡ Adjusted consumption (kWh/100km)
+- ⚡ Adjusted consumption (kWh/100Km)
 - 🔋 Estimated energy required (kWh)
 - 📊 SoC that will be consumed (%)
 - 🏁 Estimated final SoC on arrival (%)
@@ -213,11 +213,11 @@ pctPerHour     = (chargePower × efficiency / batteryCapacity) × 100
 The **Speed vs Range** tab renders an interactive **canvas chart** showing how estimated range changes across driving speeds, modelling aerodynamic drag using a v² scaling law.
 
 **How it works:**
-- Uses the baseline real consumption (from the main calculator) as the reference point at a reference speed (~90 km/h)
+- Uses the baseline real consumption (from the main calculator) as the reference point at a reference speed (~90 Km/h)
 - Applies an aerodynamic correction factor for each speed step: `adjustedCons = baseCons × (speed / refSpeed)²`  
   (with a small rolling-resistance floor to avoid unrealistically low values at very low speeds)
-- Draws a smooth curve from ~30 km/h to 200+ km/h
-- Shows a **data table** below the chart with speed/range pairs at fixed intervals (e.g. 50, 80, 90, 110, 130, 150 km/h)
+- Draws a smooth curve from ~30 Km/h to 200+ Km/h
+- Shows a **data table** below the chart with speed/range pairs at fixed intervals (e.g. 50, 80, 90, 110, 130, 150 Km/h)
 
 The chart **re-draws automatically** on window resize and whenever the tab becomes visible.
 
@@ -261,7 +261,7 @@ co2SavedPct  = (co2Saved / iceCO2Trip) × 100
 - 🔌 CO₂ emitted by the EV for this trip (g and kg)
 - 🚗 CO₂ that the reference ICE vehicle would have emitted (g and kg)
 - 🌿 CO₂ saved vs ICE (g, kg, and percentage)
-- 📊 EV CO₂ per km (g/km)
+- 📊 EV CO₂ per Km (g/Km)
 
 > 💡 The result adapts to your local electricity grid: a coal-heavy grid will show less savings than a renewable-heavy one. You can customise the `Grid CO₂ intensity` field in the main panel.
 
@@ -273,7 +273,7 @@ The **Trip Log** provides persistent historical tracking of your drives.
 
 **Logging:**
 - Click **📍 Log Current Trip** to save the current calculator state as a timestamped entry
-- Each entry records: 📅 date/time, 📏 distance (km), ⚡ consumption (kWh/100km), 💰 trip cost (€)
+- Each entry records: 📅 date/time, 📏 distance (Km), ⚡ consumption (kWh/100Km), 💰 trip cost (€)
 - The log holds up to **50 entries** (oldest automatically removed when the cap is reached)
 - The app automatically switches to the Trip Log tab after logging
 
@@ -281,8 +281,8 @@ The **Trip Log** provides persistent historical tracking of your drives.
 - All entries listed in reverse chronological order (newest first)
 - Each entry has a ✕ **delete button** to remove individual records
 - When 2+ entries exist, an **averages summary** is shown below the list:
-  - 📏 Total km logged (sum)
-  - ⚡ Average consumption (mean kWh/100km)
+  - 📏 Total Km logged (sum)
+  - ⚡ Average consumption (mean kWh/100Km)
   - 🔢 Number of trips logged
 
 ---
@@ -306,12 +306,12 @@ An always-available **standalone calculator** embedded within the app for ad-hoc
 
 **⚡ SoC ↔ Km Converter (bonus tool):**
 A two-way live converter embedded below the calculator:
-- Enter a **SoC %** → instantly see the corresponding **km range**
-- Enter a **km distance** → instantly see the required **SoC %**
-- Uses the `km per % SoC` ratio computed from the main calculator
+- Enter a **SoC %** → instantly see the corresponding **Km range**
+- Enter a **Km distance** → instantly see the required **SoC %**
+- Uses the `Km per % SoC` ratio computed from the main calculator
 - Updates in real time as you type
 
-> ℹ️ The converter requires valid main calculator data to function (km/% must be established first).
+> ℹ️ The converter requires valid main calculator data to function (Km/% must be established first).
 
 ---
 
@@ -321,8 +321,8 @@ Vehicle profiles allow you to switch between multiple EVs (or configurations) in
 
 **Each preset stores:**
 - 🔋 Usable battery capacity (kWh)
-- 📄 WLTP rated range (km)
-- ⛽ ICE reference fuel consumption (km/L) — for cost/CO₂ comparisons
+- 📄 WLTP rated range (Km)
+- ⛽ ICE reference fuel consumption (Km/L) — for cost/CO₂ comparisons
 
 **Operations:**
 - **💾 Save** — prompts for a name and saves the current values as a new named profile
