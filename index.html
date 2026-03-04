@@ -877,7 +877,7 @@ select {
                     <div class="card" id="charging-calculator-card">
                         <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">Charging Calculator</h3>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: -1rem; margin-bottom: 1rem; text-align: left;">
-                            Calculates charging time and cost. Doesn't account for charging curve (assumes linear speed).
+                            Calculates charging time and cost. Doesn't account for charging curve (assumes <strong style="color: var(--accent-red);">linear speed</strong>).
                         </p>
                          <div class="input-group">
                             <label for="chargePower">Average charging power</label>
@@ -910,7 +910,7 @@ select {
                     <div class="card">
                         <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 0.5rem;">CO₂ Savings vs ICE</h3>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 1.5rem; text-align: left;">
-                            Based on your grid CO₂ intensity and the ICE reference vehicle. Requires valid main calculator data.
+                            Based on your <strong style="color: var(--accent-red);">grid CO₂ intensity</strong> and the ICE reference vehicle. Requires valid main calculator data.
                         </p>
                         <div id="co2-results"></div>
                     </div>
@@ -921,7 +921,7 @@ select {
                     <div class="card">
                         <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 0.5rem;">Battery Health (SoH) Estimator</h3>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 1.5rem; text-align: left;">
-                            Compares your measured real-world range against the WLTP rated range to estimate battery's State of Health.
+                            Compares your measured <strong style="color: var(--accent-red);">real-world range</strong> against the WLTP rated range to estimate battery's State of Health.
                         </p>
                         <div class="health-gauge-wrap">
                             <div class="health-arc">
@@ -947,7 +947,7 @@ select {
                     <div class="card">
                         <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 0.5rem;">Speed vs. Range Curve</h3>
                         <p style="font-size: 0.8rem; color: var(--text-muted); margin: 0 0 1rem; text-align: left;">
-                            Projects how your real consumption changes across speeds. Requires valid main calculator data. Aerodynamic drag modelled with <em>v²</em> scaling.
+                            Projects how your real consumption changes across speeds, assuming <strong style="color: var(--accent-red);">90 Km/h</strong> as reference one (WLTP). Requires valid main calculator data. Aerodynamic drag modelled with <em>v²</em> scaling.
                         </p>
                         <div class="chart-wrapper">
                             <canvas id="speedRangeChart" class="range-chart" height="220"></canvas>
@@ -1019,19 +1019,14 @@ select {
                             <h4>⚡ SoC ↔ Km converter</h4>
                             <div class="soc-row">
                                 <input type="number" id="socConvInput" placeholder="%" min="0" max="100" step="0.1">
-                                <span class="soc-label">% SoC</span>
                                 <span class="soc-label" style="color:var(--text-light);">→</span>
-                                <div class="soc-result" id="socConvKm">—</div>
-                                <span class="soc-label">Km</span>
+                                <div class="soc-result" id="socConvKm">Km</div>
                             </div>
                             <div class="soc-row" style="margin-top:0.5rem;">
-                                <input type="number" id="kmConvInput" placeholder="km" min="0" max="2000" step="1">
-                                <span class="soc-label">Km</span>
+                                <input type="number" id="kmConvInput" placeholder="Km" min="0" max="2000" step="1">
                                 <span class="soc-label" style="color:var(--text-light);">→</span>
-                                <div class="soc-result" id="kmConvSoc">—</div>
-                                <span class="soc-label">% SoC</span>
+                                <div class="soc-result" id="kmConvSoc">% SoC</div>
                             </div>
-                            <p style="margin:0.5rem 0 0; font-size:0.72rem; color:var(--text-muted);">Uses Km/% from the main calculator. Fill in the main form first.</p>
                         </div>
                     </div>
                 </div>
@@ -1460,7 +1455,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="details-item"><p class="label">Traveled Km per battery %</p><p class="value blue">${fmt(res.kmPerPercent)} <span class="unit">Km</span></p></div>
                 <div class="details-item"><p class="label">Overall driving cost</p><p class="value yellow">${fmt(res.tripCost)} <span class="unit">€</span></p></div>
                 <div class="details-item"><p class="label">Overall driving cost per Km</p><p class="value yellow">${fmt(res.costPerKm, 3)} <span class="unit">€/Km</span></p></div>
-                <div class="details-item"><p class="label">Equivalent ICE driving efficiency</p><p class="value purple">${fmt(res.equivalentEfficiency, 1)} <span class="unit">Km/L</span></p></div>
+                <div class="details-item"><p class="label">Equivalent ICE efficiency</p><p class="value purple">${fmt(res.equivalentEfficiency, 1)} <span class="unit">Km/L</span></p></div>
                 <div class="details-item"><p class="label">Equivalent ICE traveling cost</p><p class="value purple">${fmt(res.equivalentIceCostPerKwh)} <span class="unit">€/kWh</span></p></div>
                 <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value purple">${fmt(res.iceEquivalentKm, 1)} <span class="unit">Km</span></p></div>
                 <div class="details-item"><p class="label">Residual energy at minimum SoC</p><p class="value green">${fmt(res.energyAtMinBuffer)} <span class="unit">kWh</span></p></div>
@@ -1486,7 +1481,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const res = calculateTripEstimation();
         if (res) {
             DOMElements.results.estimator.innerHTML = `
-                <div class="details-item"><p class="label">Estimated adjusted consumption</p><p class="value red">${res.adjustedConsumption} <span class="unit">kWh/100Km</span></p></div>
+                <div class="details-item"><p class="label">Estimated consumption</p><p class="value red">${res.adjustedConsumption} <span class="unit">kWh/100Km</span></p></div>
                 <div class="details-item"><p class="label">Estimated energy needed</p><p class="value purple">${res.estimatedKwh} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Estimated battery needed</p><p class="value yellow">${res.socUsed} <span class="unit">%</span></p></div>
                 <div class="details-item"><p class="label">Estimated final SoC</p><p class="value green">${res.finalSoc} <span class="unit">%</span></p></div>`;
@@ -1502,11 +1497,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (res) {
             if (badgeWrap) badgeWrap.innerHTML = `<span class="charge-badge">⚡ ${res.pctPerHour} % / hour @ ${state.chargePower} kW</span>`;
             DOMElements.results.charging.innerHTML = `
-                <div class="details-item"><p class="label">Charging time</p><p class="value blue">${res.time}</p></div>
                 <div class="details-item"><p class="label">Energy added</p><p class="value green">${res.kwhAdded} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Energy drawn</p><p class="value yellow">${res.kwhTransferred} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Charging cost</p><p class="value purple">${res.chargedCost} <span class="unit">€</span></p></div>
-                <div class="details-item"><p class="label">Withdrawal cost</p><p class="value red">${res.transferredCost} <span class="unit">€</span></p></div>`;
+                <div class="details-item"><p class="label">Withdrawal cost</p><p class="value red">${res.transferredCost} <span class="unit">€</span></p></div>
+                <div class="details-item"><p class="label">Charging time</p><p class="value blue">${res.time}</p></div>`;
             applyBorderColors('charging-calculator-results');
         } else {
             if (badgeWrap) badgeWrap.innerHTML = '';
@@ -1531,12 +1526,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="co2-bar-track"><div class="co2-bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
             </div>
             <div class="details-grid" id="co2-grid" style="margin-top:0;padding-top:0;border-top:none;">
-                <div class="details-item"><p class="label">EV CO₂</p><p class="value ${parseFloat(co2.evCO2g) < parseFloat(co2.iceCO2g) ? 'green' : 'red'}">${parseFloat(co2.evCO2g)/1000} <span class="unit">Kg</span></p></div>
-                <div class="details-item"><p class="label">Equivalent ICE CO₂</p><p class="value red">${parseFloat(co2.iceCO2g)/1000} <span class="unit">Kg</span></p></div>
-                <div class="details-item"><p class="label">CO₂ saved</p><p class="value yellow">${co2.savedKg} <span class="unit">Kg</span></p></div>
-                <div class="details-item"><p class="label">EV emission rate</p><p class="value blue">${co2.evGPerKm} <span class="unit">g/Km</span></p></div>
-                <div class="details-item"><p class="label">ICE emission rate</p><p class="value purple">${state.iceCo2} <span class="unit">g/Km</span></p></div>
-                <!-- div class="details-item"><p class="label">Grid CO₂ intensity</p><p class="value yellow">${state.gridCo2} <span class="unit">g/kWh</span></p></div -->
+                <div class="details-item"><p class="label">EV CO₂</p><p class="value ${parseFloat(co2.evCO2g) < parseFloat(co2.iceCO2g) ? 'green' : 'red'}">${fmt(co2.evCO2g/1000,2)} <span class="unit">Kg</span></p></div>
+                <div class="details-item"><p class="label">Equivalent ICE CO₂</p><p class="value red">${fmt(co2.iceCO2g/1000,2)} <span class="unit">Kg</span></p></div>
+                <div class="details-item"><p class="label">EV emission rate</p><p class="value yellow">${fmt(co2.evGPerKm,2)} <span class="unit">g/Km</span></p></div>
+                <div class="details-item"><p class="label">ICE emission rate</p><p class="value purple">${fmt(state.iceCo2,2)} <span class="unit">g/Km</span></p></div>
+                <div class="details-item"><p class="label">CO₂ saved</p><p class="value blue">${fmt(co2.savedKg,2)} <span class="unit">Kg</span></p></div>
+                <!-- div class="details-item"><p class="label">Grid CO₂ intensity</p><p class="value yellow">${fmt(state.gridCo2,2)} <span class="unit">g/kWh</span></p></div -->
             </div>`;
         applyBorderColors('co2-grid');
     };
@@ -1634,7 +1629,7 @@ document.addEventListener('DOMContentLoaded', () => {
             avgEl.innerHTML = `
                 <div class="details-grid" id="log-avg-grid" style="margin-top:0.75rem;padding-top:0.75rem;border-top:1px solid var(--border-color);">
                     <div class="details-item"><p class="label">Total Km logged</p><p class="value blue">${fmt(totalKm, 0)} <span class="unit">Km</span></p></div>
-                    <div class="details-item"><p class="label">Avg consumption</p><p class="value red">${fmt(avgCons)} <span class="unit">kWh/100Km</span></p></div>
+                    <div class="details-item"><p class="label">Average consumption</p><p class="value red">${fmt(avgCons)} <span class="unit">kWh/100Km</span></p></div>
                     <div class="details-item"><p class="label">Trips logged</p><p class="value purple">${state.tripLog.length}</p></div>
                 </div>`;
             applyBorderColors('log-avg-grid');
