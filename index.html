@@ -190,79 +190,378 @@ input[type="range"]::-webkit-slider-thumb {
     text-align: center;
 }
 
+/* ── AUTONOMY TAB — Realistic Battery ── */
 .battery-visual-container {
     position: relative;
-    margin: 0 auto 2rem;
+    margin: 0 auto 0;
     display: flex;
     flex-direction: column;
     align-items: center;
-}
-
-#battery-box {
-    position: relative;
-    height: 8rem;
     width: 100%;
-    border: 4px solid var(--border-color);
-    border-radius: 1rem;
-    padding: 0.5rem;
-    background-color: var(--bg-card);
+}
+
+/* Hidden legacy elements — kept for JS compatibility */
+#battery-box { display: none; }
+#battery-level { display: none; }
+#battery-tip { display: none; }
+#battery-buffer-marker { display: none; }
+#battery-start-marker { display: none; }
+.battery-label { display: none; }
+
+/* ── SVG Battery Shell ── */
+.ev-battery-wrap {
+    width: 100%;
+    max-width: 1000px;
+    position: reltive;
+}
+
+.ev-battery-svg-container {
+    width: 100%;
+    position: relative;
+}
+
+/* ── SoC Ring ── */
+.soc-ring-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.soc-ring-svg {
+    filter: drop-shadow(0 0 12px var(--ring-glow, rgba(52,211,153,0.4)));
+    transition: filter 0.7s ease;
+}
+
+.soc-center-text {
+    font-size: 2.6rem;
+    font-weight: 900;
+    fill: var(--text-light, #e2e8f0);
+    font-family: 'Courier New', monospace;
+    letter-spacing: -0.05em;
+}
+.soc-center-sub {
+    font-size: 0.72rem;
+    fill: var(--text-muted, #64748b);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    font-family: system-ui, sans-serif;
+}
+
+/* ── Horizontal Battery Body ── */
+.h-battery-outer {
+    width: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-bottom: 0.5rem;
+}
+
+.h-battery-body {
+    flex: 1;
+    height: 56px;
+    background: var(--bg-dark);
+    border: 2.5px solid var(--border-color);
+    border-radius: 10px;
+    position: relative;
     overflow: hidden;
+    box-shadow:
+        inset 0 2px 4px rgba(0,0,0,0.4),
+        inset 0 -1px 2px rgba(255,255,255,0.04),
+        0 0 0 1px rgba(255,255,255,0.03);
 }
 
-#battery-level {
-    height: 100%;
-    border-radius: 0.5rem;
-    transition: width 0.7s ease-out, background-color 0.7s ease-out;
-    background-color: var(--accent-emerald);
-}
-
-#battery-tip {
+/* Sheen overlay */
+.h-battery-body::before {
+    content: '';
     position: absolute;
-    right: -12px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 12px;
-    height: 3rem;
-    background-color: var(--border-color);
-    border-top-right-radius: 0.25rem;
-    border-bottom-right-radius: 0.25rem;
+    top: 0; left: 0; right: 0;
+    height: 45%;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.06), transparent);
+    border-radius: 8px 8px 0 0;
+    z-index: 3;
+    pointer-events: none;
 }
 
-#battery-buffer-marker, #battery-start-marker {
+/* Cell dividers */
+.h-battery-cells {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    display: flex;
+    pointer-events: none;
+}
+.h-cell-divider {
+    position: absolute;
+    top: 6px; bottom: 6px;
+    width: 1.5px;
+    background: rgba(255,255,255,0.07);
+}
+[data-theme="light"] .h-cell-divider {
+    background: rgba(0,0,0,0.08);
+}
+
+.h-battery-fill {
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    border-radius: 7px 0 0 7px;
+    transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1), background 0.7s ease;
+    z-index: 1;
+}
+
+/* Animated glow pulse on fill */
+.h-battery-fill::after {
+    content: '';
+    position: absolute;
+    right: 0; top: 0; bottom: 0;
+    width: 24px;
+    background: rgba(255,255,255,0.18);
+    filter: blur(6px);
+    border-radius: 0 4px 4px 0;
+    animation: battPulse 2s ease-in-out infinite;
+}
+@keyframes battPulse {
+    0%, 100% { opacity: 0.6; }
+    50% { opacity: 1; }
+}
+
+/* Segment tick marks on top */
+.h-battery-ticks {
+    position: absolute;
+    top: -14px;
+    left: 0; right: 0;
+    height: 10px;
+    pointer-events: none;
+    z-index: 4;
+}
+.h-battery-tick {
     position: absolute;
     top: 0;
-    bottom: 0;
-    z-index: 10;
-    transition: left 0.5s ease;
-}
-
-#battery-buffer-marker { border-left: 2px dashed var(--accent-red); }
-#battery-start-marker { border-left: 2px dashed var(--accent-blue); }
-
-#battery-buffer-marker span, #battery-start-marker span {
-    position: absolute;
-    left: 50%;
+    width: 1px;
+    height: 6px;
+    background: var(--text-muted);
+    opacity: 0.4;
     transform: translateX(-50%);
-    font-size: 10px;
-    font-weight: bold;
-    text-transform: uppercase;
+}
+.h-battery-tick.major {
+    height: 10px;
+    opacity: 0.7;
+    width: 1.5px;
+}
+.h-battery-tick-label {
+    position: absolute;
+    top: -16px;
+    font-size: 9px;
+    font-weight: 700;
+    color: var(--text-muted);
+    transform: translateX(-50%);
     white-space: nowrap;
 }
 
-#battery-buffer-marker span { top: -20px; color: var(--accent-red); }
-#battery-start-marker span { bottom: -20px; color: var(--accent-blue); }
+/* Buffer + Start markers  */
+.h-marker {
+    position: absolute;
+    top: -3px; bottom: -3px;
+    width: 2px;
+    z-index: 5;
+    pointer-events: none;
+    transition: left 0.5s ease;
+}
+.h-marker.buffer { background: var(--accent-red); }
+.h-marker.start { background: var(--accent-blue); }
+.h-marker::before {
+    content: attr(data-label);
+    position: absolute;
+    bottom: calc(100% + 4px);
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    font-weight: 800;
+    text-transform: uppercase;
+    white-space: nowrap;
+    padding: 1px 5px;
+    border-radius: 3px;
+    letter-spacing: 0.05em;
+}
+.h-marker.buffer::before { color: var(--accent-red); background: rgba(248,113,113,0.12); }
+.h-marker.start::before  { color: var(--accent-blue); background: rgba(96,165,250,0.12); }
+.h-marker::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 7px; height: 7px;
+    border-radius: 50%;
+}
+.h-marker.buffer::after { background: var(--accent-red); }
+.h-marker.start::after  { background: var(--accent-blue); }
 
-.battery-label span {
-    font-size: 2.5rem;
-    font-weight: 900;
+/* Battery nub (positive terminal) */
+.h-battery-nub {
+    width: 10px; height: 26px;
+    background: var(--border-color);
+    border-radius: 0 4px 4px 0;
+    border: 2px solid var(--border-color);
+    border-left: none;
+    box-shadow: inset 0 1px 2px rgba(255,255,255,0.06);
+    flex-shrink: 0;
 }
 
-.battery-label p {
+/* ── Segment Labels below bar ── */
+.h-battery-legend {
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    font-weight: 700;
     color: var(--text-muted);
     text-transform: uppercase;
-    font-size: 0.9rem;
+    letter-spacing: 0.08em;
+    padding: 0 2px;
+    margin-bottom: 1.5rem;
+    margin-top: 18px;
+}
+
+/* ── Autonomy Geek Stats Grid ── */
+.autonomy-stats-outer {
+    width: 100%;
+}
+
+.autonomy-hero {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-bottom: 0.25rem;
+}
+.autonomy-hero .hero-val {
+    font-size: 5rem;
+    font-weight: 900;
+    line-height: 1;
+    font-family: 'Courier New', monospace;
+    letter-spacing: -0.04em;
+    color: var(--accent-emerald);
+    transition: color 0.7s;
+}
+.autonomy-hero .hero-unit {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    font-style: italic;
+    padding-bottom: 0.5rem;
+}
+.autonomy-hero-sub {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+/* Speed range mini-pills */
+.speed-range-pills {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 0 0 1.5rem;
+}
+.speed-pill {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.6rem;
+    padding: 0.45rem 0.75rem;
+    min-width: 58px;
+    transition: border-color 0.3s;
+}
+.speed-pill:hover { border-color: var(--accent-blue); }
+.speed-pill .sp-speed {
+    font-size: 0.65rem;
+    font-weight: 800;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 2px;
+}
+.speed-pill .sp-range {
+    font-size: 1rem;
+    font-weight: 900;
+    color: var(--accent-emerald);
+    line-height: 1.1;
+}
+.speed-pill .sp-unit {
+    font-size: 0.6rem;
+    color: var(--text-muted);
+    font-weight: 700;
+}
+
+/* Autonomy detail grid */
+.autonomy-detail-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.75rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+.autonomy-detail-item {
+    background: var(--input-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 0.85rem;
+    padding: 0.85rem 1rem;
+    border-bottom: 3px solid transparent;
+    text-align: left;
+    transition: border-color 0.3s;
+}
+.autonomy-detail-item .ad-label {
+    font-size: 9px;
+    text-transform: uppercase;
+    font-weight: 900;
     letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin: 0 0 4px;
+}
+.autonomy-detail-item .ad-val {
+    font-size: 1.2rem;
+    font-weight: 800;
+    line-height: 1.1;
     margin: 0;
+}
+.autonomy-detail-item .ad-unit {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.autonomy-no-data {
+    padding: 2rem 1rem;
+    background-color: var(--input-bg);
+    border-radius: 1rem;
+    border: 1px dashed var(--border-color);
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Charged-indicator strip */
+.soc-strip {
+    width: 100%;
+    height: 5px;
+    border-radius: 99px;
+    background: var(--border-color);
+    margin: 0.5rem 0 1.5rem;
+    overflow: hidden;
+}
+.soc-strip-fill {
+    height: 100%;
+    border-radius: 99px;
+    transition: width 0.8s cubic-bezier(0.34,1.56,0.64,1), background 0.7s;
 }
 
 .results-display h2 {
@@ -822,8 +1121,10 @@ select {
 
                 <!-- ── AUTONOMY ── -->
                 <div id="tab-autonomy" class="tab-content">
-                    <div class="card results-card">
-                        <div class="battery-visual-container">
+                    <div class="card results-card" style="text-align:left;">
+
+                        <!-- Legacy hidden elements for JS compatibility -->
+                        <div class="battery-visual-container" style="display:none;">
                             <div id="battery-tip"></div>
                             <div id="battery-box">
                                 <div id="battery-level"></div>
@@ -835,11 +1136,83 @@ select {
                                 <p>Current charge</p>
                             </div>
                         </div>
-        
-                        <div class="results-display">
-                            <h2>Expected residual autonomy</h2>
-                            <div id="results-content"></div>
+
+                        <!-- ── New Realistic Battery Visual ── -->
+                        <div class="ev-battery-wrap">
+
+                            <!-- SoC Ring -->
+                            <div class="soc-ring-container">
+                                <svg class="soc-ring-svg" id="soc-ring-svg" width="180" height="180" viewBox="0 0 180 180">
+                                    <defs>
+                                        <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" id="ringGradStop1" stop-color="#34d399"/>
+                                            <stop offset="100%" id="ringGradStop2" stop-color="#60a5fa"/>
+                                        </linearGradient>
+                                        <filter id="ringGlow">
+                                            <feGaussianBlur stdDeviation="3" result="blur"/>
+                                            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                                        </filter>
+                                    </defs>
+                                    <!-- Track -->
+                                    <circle cx="90" cy="90" r="74" fill="none" stroke="var(--border-color)" stroke-width="12" stroke-linecap="round"
+                                        stroke-dasharray="424" stroke-dashoffset="106" transform="rotate(126 90 90)"/>
+                                    <!-- Glow fill -->
+                                    <circle id="soc-ring-fill" cx="90" cy="90" r="74" fill="none" stroke="url(#ringGrad)" stroke-width="12" stroke-linecap="round"
+                                        stroke-dasharray="424" stroke-dashoffset="424" transform="rotate(126 90 90)"
+                                        filter="url(#ringGlow)"
+                                        style="transition: stroke-dashoffset 0.9s cubic-bezier(0.34,1.2,0.64,1), stroke 0.7s;"/>
+                                    <!-- Tick marks at 25/50/75% -->
+                                    <line x1="90" y1="10" x2="90" y2="20" stroke="var(--border-color)" stroke-width="2" transform="rotate(-54 90 90)"/>
+                                    <line x1="90" y1="10" x2="90" y2="20" stroke="var(--border-color)" stroke-width="2" transform="rotate(18 90 90)"/>
+                                    <line x1="90" y1="10" x2="90" y2="20" stroke="var(--border-color)" stroke-width="2" transform="rotate(90 90 90)"/>
+                                    <!-- Center text -->
+                                    <text x="90" y="83" text-anchor="middle" class="soc-center-text" id="soc-ring-pct">80%</text>
+                                    <text x="90" y="104" text-anchor="middle" class="soc-center-sub">State of Charge</text>
+                                    <!-- Small kWh label -->
+                                    <text x="90" y="120" text-anchor="middle" id="soc-ring-kwh" font-size="11" font-weight="700" fill="var(--text-muted)" font-family="'Courier New', monospace">— kWh</text>
+                                </svg>
+                            </div>
+
+                            <!-- Horizontal Battery Bar -->
+                            <div style="position:relative; padding-top:22px; margin-bottom:0;">
+                                <!-- Tick marks above bar -->
+                                <div class="h-battery-ticks" id="h-battery-ticks"></div>
+
+                                <div class="h-battery-outer">
+                                    <div class="h-battery-body" id="h-battery-body">
+                                        <!-- Fill -->
+                                        <div class="h-battery-fill" id="h-battery-fill"></div>
+                                        <!-- Cell dividers -->
+                                        <div class="h-battery-cells" id="h-battery-cells"></div>
+                                        <!-- Markers -->
+                                        <div class="h-marker buffer" id="h-buffer-marker" data-label="Buffer"></div>
+                                        <div class="h-marker start"  id="h-start-marker"  data-label="Start"></div>
+                                    </div>
+                                    <div class="h-battery-nub"></div>
+                                </div>
+                            </div>
+
+                            <!-- Legend below bar -->
+                            <div class="h-battery-legend">
+                                <span>0%</span>
+                                <span>Buffer</span>
+                                <span>50%</span>
+                                <span>Start</span>
+                                <span>100%</span>
+                            </div>
+
+                        </div><!-- /.ev-battery-wrap -->
+
+                        <!-- ── Autonomy Results ── -->
+                        <div class="autonomy-stats-outer" id="results-content">
+                            <!-- injected by JS -->
                         </div>
+
+                        <!-- hidden compat -->
+                        <div class="results-display" style="display:none;">
+                            <h2>Expected residual autonomy</h2>
+                        </div>
+
                     </div>
                 </div>
 
@@ -1434,7 +1807,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // ── UI UPDATES ──
     const updateUI = () => {
-        const { currentBattery, minBattery, startBattery } = state;
+        const { currentBattery, minBattery, startBattery, batteryCapacity } = state;
+
+        // ── Legacy DOM (hidden, but JS still references them) ──
         DOMElements.battery.level.style.width = `${currentBattery}%`;
         let color = currentBattery <= minBattery ? 'var(--accent-red)' : (currentBattery <= 20 ? 'var(--accent-amber)' : 'var(--accent-emerald)');
         DOMElements.battery.level.style.backgroundColor = color;
@@ -1442,12 +1817,12 @@ document.addEventListener('DOMContentLoaded', () => {
         DOMElements.battery.bufferMarker.style.left = `${minBattery}%`;
         DOMElements.battery.startMarker.style.left = `${startBattery}%`;
 
+        // ── NEW Battery Visuals ──
+        updateNewBatteryVisuals(currentBattery, minBattery, startBattery, batteryCapacity, color);
+
         const res = calculateMainResults();
         if (res) {
-            DOMElements.results.main.innerHTML = `<div class="results-data"><span class="value">${Math.round(res.remainingRange)}</span><span class="unit">Km</span></div>`;
-            const wltpRatioHtml = res.wltpRatio !== null
-                ? `<div class="details-item"><p class="label">Real vs WLTP ratio</p><p class="value ${res.wltpRatio >= 80 ? 'green' : res.wltpRatio >= 60 ? 'yellow' : 'red'}">${fmt(res.wltpRatio, 1)} <span class="unit">%</span></p></div>`
-                : '';
+            renderAutonomyTab(res, currentBattery, minBattery, startBattery, batteryCapacity);
             DOMElements.results.stats.innerHTML = `
                 <div class="details-item"><p class="label">Overall driving consumption</p><p class="value red">${fmt(res.consumptionKwh100km)} <span class="unit">kWh/100Km</span></p></div>
                 <div class="details-item"><p class="label">Overall energy consumed</p><p class="value red">${fmt(res.energyUsedKwh)} <span class="unit">kWh</span></p></div>
@@ -1460,10 +1835,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value purple">${fmt(res.iceEquivalentKm, 1)} <span class="unit">Km</span></p></div>
                 <div class="details-item"><p class="label">Residual energy at minimum SoC</p><p class="value green">${fmt(res.energyAtMinBuffer)} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Projected full-charge range</p><p class="value green">${fmt(res.fullRangeReal, 0)} <span class="unit">Km</span></p></div>
-                ${wltpRatioHtml}`;
+                ${res.wltpRatio !== null ? `<div class="details-item"><p class="label">Real vs WLTP ratio</p><p class="value ${res.wltpRatio >= 80 ? 'green' : res.wltpRatio >= 60 ? 'yellow' : 'red'}">${fmt(res.wltpRatio, 1)} <span class="unit">%</span></p></div>` : ''}`;
             applyBorderColors('stats-grid');
         } else {
-            DOMElements.results.main.innerHTML = `<div class="no-results"><p>Enter valid data (Start % > Current %)</p></div>`;
+            document.getElementById('results-content').innerHTML = `<div class="autonomy-no-data"><p>Enter valid data (Start % > Current %, distance > 0)</p></div>`;
             DOMElements.results.stats.innerHTML = '';
         }
 
@@ -1475,6 +1850,190 @@ document.addEventListener('DOMContentLoaded', () => {
         updateSoCConverter();
         renderTripLog();
         renderHealthLog();
+    };
+
+    // ── NEW BATTERY VISUAL UPDATER ──
+    const updateNewBatteryVisuals = (soc, minSoc, startSoc, capacity, fillColor) => {
+        // SoC Ring
+        const ring = document.getElementById('soc-ring-fill');
+        const pctLabel = document.getElementById('soc-ring-pct');
+        const kwhLabel = document.getElementById('soc-ring-kwh');
+        const ringStop1 = document.getElementById('ringGradStop1');
+        const ringStop2 = document.getElementById('ringGradStop2');
+        const ringSvg = document.getElementById('soc-ring-svg');
+
+        if (ring && pctLabel) {
+            const totalArc = 424 * 0.75; // 75% of circumference used for 0-100%
+            const dashOffset = 424 - (soc / 100) * totalArc;
+            ring.style.strokeDashoffset = dashOffset.toFixed(1);
+
+            let c1, c2, glow;
+            if (soc <= minSoc) {
+                c1 = '#f87171'; c2 = '#ef4444'; glow = 'rgba(248,113,113,0.5)';
+            } else if (soc <= 20) {
+                c1 = '#fbbf24'; c2 = '#f59e0b'; glow = 'rgba(251,191,36,0.5)';
+            } else {
+                c1 = '#34d399'; c2 = '#60a5fa'; glow = 'rgba(52,211,153,0.45)';
+            }
+            if (ringStop1) ringStop1.setAttribute('stop-color', c1);
+            if (ringStop2) ringStop2.setAttribute('stop-color', c2);
+            if (ringSvg) ringSvg.style.filter = `drop-shadow(0 0 14px ${glow})`;
+            pctLabel.textContent = `${soc}%`;
+            if (kwhLabel) {
+                const kwhNow = ((soc / 100) * capacity).toFixed(1);
+                kwhLabel.textContent = `${kwhNow} kWh`;
+            }
+        }
+
+        // Horizontal bar
+        const fill = document.getElementById('h-battery-fill');
+        const bufMk = document.getElementById('h-buffer-marker');
+        const startMk = document.getElementById('h-start-marker');
+        const cells = document.getElementById('h-battery-cells');
+
+        if (fill) {
+            fill.style.width = `${soc}%`;
+            if (soc <= minSoc) {
+                fill.style.background = 'linear-gradient(to right, #b91c1c, #f87171)';
+            } else if (soc <= 20) {
+                fill.style.background = 'linear-gradient(to right, #b45309, #fbbf24)';
+            } else if (soc <= 50) {
+                fill.style.background = 'linear-gradient(to right, #047857, #34d399)';
+            } else {
+                fill.style.background = 'linear-gradient(to right, #0369a1, #34d399 40%, #60a5fa)';
+            }
+        }
+
+        if (bufMk) bufMk.style.left = `${minSoc}%`;
+        if (startMk) startMk.style.left = `${startSoc}%`;
+
+        // Cell dividers (every 10%)
+        if (cells && !cells.dataset.built) {
+            cells.dataset.built = '1';
+            for (let i = 10; i < 100; i += 10) {
+                const d = document.createElement('div');
+                d.className = 'h-cell-divider';
+                d.style.left = `${i}%`;
+                cells.appendChild(d);
+            }
+        }
+
+        // Tick marks
+        const ticks = document.getElementById('h-battery-ticks');
+        if (ticks && !ticks.dataset.built) {
+            ticks.dataset.built = '1';
+            for (let i = 0; i <= 100; i += 5) {
+                const t = document.createElement('div');
+                const isMajor = i % 25 === 0;
+                t.className = `h-battery-tick${isMajor ? ' major' : ''}`;
+                t.style.left = `${i}%`;
+                ticks.appendChild(t);
+                if (isMajor && i > 0 && i < 100) {
+                    const lbl = document.createElement('div');
+                    lbl.className = 'h-battery-tick-label';
+                    lbl.style.left = `${i}%`;
+                    lbl.textContent = `${i}%`;
+                    ticks.appendChild(lbl);
+                }
+            }
+        }
+    };
+
+    // ── AUTONOMY TAB RENDERER ──
+    const renderAutonomyTab = (res, soc, minSoc, startSoc, capacity) => {
+        const el = document.getElementById('results-content');
+        if (!el) return;
+
+        // Speed-range pills: 90, 110, 130 Km/h projections
+        const speedData = buildSpeedRangeData();
+        const pillSpeeds = [30, 50, 70, 90, 110, 130];
+        let pillsHtml = '';
+        if (speedData) {
+            pillsHtml = `<div class="speed-range-pills">` +
+                pillSpeeds.map(spd => {
+                    const d = speedData.find(x => x.v === spd);
+                    if (!d) return '';
+                    return `<div class="speed-pill">
+                        <span class="sp-speed">${spd} Km/h</span>
+                        <span class="sp-range">${d.range}</span>
+                        <span class="sp-unit">Km</span>
+                    </div>`;
+                }).join('') +
+            `</div>`;
+        }
+
+        // Time-to-empty at current speed (use avg speed from state if valid, else 90)
+        const refSpeed = state.averageSpeed > 0 ? state.averageSpeed : 90;
+        const hoursToEmpty = res.remainingRange > 0 ? (res.remainingRange / refSpeed) : 0;
+        const hTTE = Math.floor(hoursToEmpty);
+        const mTTE = Math.round((hoursToEmpty - hTTE) * 60);
+        const tteStr = hoursToEmpty > 0 ? `${hTTE}h ${mTTE}m` : '—';
+
+        // kWh remaining above buffer
+        const kwhRemaining = ((soc - minSoc) / 100) * capacity;
+        const kwhTotal = (soc / 100) * capacity;
+
+        // Wh/Km
+        const whPerKm = res.consumptionKwh100km * 10;
+
+        // Range color class
+        const rangeColorClass = res.remainingRange < 50 ? 'red' : res.remainingRange < 100 ? 'yellow' : 'green';
+
+        // WLTP ratio badge
+        const wltpBadge = res.wltpRatio !== null
+            ? `<span style="font-size:0.75rem;font-weight:800;color:${res.wltpRatio >= 80 ? 'var(--accent-emerald)' : res.wltpRatio >= 60 ? 'var(--accent-amber)' : 'var(--accent-red)'}; background:var(--input-bg); border:1px solid var(--border-color); border-radius:99px; padding:2px 10px; margin-left:0.5rem;">${fmt(res.wltpRatio,1)}% WLTP</span>`
+            : '';
+
+        el.innerHTML = `
+            <div class="autonomy-hero">
+                <span class="hero-val" style="color:var(--accent-${rangeColorClass === 'green' ? 'emerald' : rangeColorClass === 'yellow' ? 'amber' : 'red'})">${Math.round(res.remainingRange)}</span>
+                <span class="hero-unit">Km</span>
+                ${wltpBadge}
+            </div>
+            <div class="autonomy-hero-sub">Estimated remaining range</div>
+
+            ${pillsHtml}
+
+            <div class="autonomy-detail-grid" id="autonomy-detail-grid">
+                <div class="autonomy-detail-item">
+                    <p class="ad-label">Usable energy</p>
+                    <p class="ad-val" style="color:var(--accent-emerald)">${fmt(kwhRemaining,1)} <span class="ad-unit">kWh</span></p>
+                </div>
+                <div class="autonomy-detail-item">
+                    <p class="ad-label">Total energy</p>
+                    <p class="ad-val" style="color:var(--accent-blue)">${fmt(kwhTotal,1)} <span class="ad-unit">kWh</span></p>
+                </div>
+                <div class="autonomy-detail-item">
+                    <p class="ad-label">Consumption</p>
+                    <p class="ad-val" style="color:var(--accent-red)">${fmt(res.consumptionKwh100km)} <span class="ad-unit">kWh/100Km</span></p>
+                </div>
+                <div class="autonomy-detail-item">
+                    <p class="ad-label">Efficiency</p>
+                    <p class="ad-val" style="color:var(--accent-amber)">${fmt(whPerKm,0)} <span class="ad-unit">Wh/Km</span></p>
+                </div>
+                <div class="autonomy-detail-item">
+                    <p class="ad-label">Km per battery %</p>
+                    <p class="ad-val" style="color:var(--accent-red)">${fmt(res.kmPerPercent)} <span class="ad-unit">Km</span></p>
+                </div>
+                <div class="autonomy-detail-item">
+                    <p class="ad-label">Time to empty</p>
+                    <p class="ad-val" style="color:var(--accent-purple)">${tteStr}</p>
+                </div>
+                <div class="autonomy-detail-item">
+                    <p class="ad-label">Full range</p>
+                    <p class="ad-val" style="color:var(--accent-blue)">${fmt(res.fullRangeReal,0)} <span class="ad-unit">Km</span></p>
+                </div>
+                <div class="autonomy-detail-item">
+                    <p class="ad-label">Buffer reserve</p>
+                    <p class="ad-val" style="color:var(--accent-emerald)">${fmt(res.energyAtMinBuffer,1)} <span class="ad-unit">kWh</span></p>
+                </div>
+            </div>`;
+
+        // Apply border colors
+        document.querySelectorAll('#autonomy-detail-grid .autonomy-detail-item').forEach(item => {
+            const v = item.querySelector('.ad-val');
+            if (v) item.style.borderBottomColor = window.getComputedStyle(v).color;
+        });
     };
 
     const updateTripEstimatorUI = () => {
