@@ -2037,7 +2037,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="details-item"><p class="label">Equivalent ICE traveling cost</p><p class="value purple">${fmt(res.equivalentIceCostPerKwh)} <span class="unit">€/kWh</span></p></div>
                 <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value purple">${fmt(res.iceEquivalentKm, 1)} <span class="unit">Km</span></p></div>
                 <div class="details-item"><p class="label">Residual energy at minimum SoC</p><p class="value green">${fmt(res.energyAtMinBuffer)} <span class="unit">kWh</span></p></div>
-                <div class="details-item"><p class="label">Projected full-charge range</p><p class="value green">${fmt(res.fullRangeReal, 0)} <span class="unit">Km</span></p></div>
+                <div class="details-item"><p class="label">Projected full charge range</p><p class="value green">${fmt(res.fullRangeReal, 0)} <span class="unit">Km</span></p></div>
                 ${res.wltpRatio !== null ? `<div class="details-item"><p class="label">Real vs WLTP ratio</p><p class="value ${res.wltpRatio >= 80 ? 'green' : res.wltpRatio >= 60 ? 'yellow' : 'red'}">${fmt(res.wltpRatio, 1)} <span class="unit">%</span></p></div>` : ''}`;
             applyBorderColors('stats-grid');
         } else {
