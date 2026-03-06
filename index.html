@@ -67,7 +67,7 @@ header {
 }
 
 header h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
     font-weight: 900;
     background: linear-gradient(to right, var(--accent-blue), var(--accent-emerald));
     -webkit-background-clip: text;
@@ -1157,6 +1157,7 @@ select {
                 <button class="theme-toggle" id="themeToggle">
                     <span id="themeIcon">☀️</span>
                 </button>
+                <button class="header-profile-btn" id="openAboutBtn" title="About">⭐</button>
             </div>
         </header>
 
@@ -1170,6 +1171,20 @@ select {
                     <input type="text" class="profile-name-input" id="profileNameInput" placeholder="Profile name" maxlength="40">
                     <button class="profile-save-btn" id="saveProfileBtn">💾 Save</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- ── ABOUT MODAL ── -->
+        <div class="modal-overlay" id="aboutModal">
+            <div class="modal-box">
+                <button class="modal-close" id="closeAboutBtn">&times;</button>
+                <h2>ℹ️ About EV Master</h2>
+                <p style="text-align: left; margin-bottom: 0.5rem; font-size: 0.9rem;"><strong style="color: var(--accent-blue);">Synopsis:</strong> A simple but effective web-based calculator designed for BEV owners.</p>
+                <p style="text-align: left; margin-bottom: 0.5rem; font-size: 0.9rem;"><strong style="color: var(--accent-blue);">Author:</strong> Gianfranco Piazzolla</p>
+                <p style="text-align: left; margin-bottom: 0.5rem; font-size: 0.9rem;"><strong style="color: var(--accent-blue);">GitHub repository:</strong> <a href="https://github.com/GianfrancoPiazzolla/EV-Master" target="_blank" style="color: var(--accent-emerald);">EV Master</a></p>
+                <p style="text-align: left; margin-bottom: 0.5rem; font-size: 0.9rem;"><strong style="color: var(--accent-blue);">More Apps:</strong> <a href="https://github.com/GianfrancoPiazzolla" target="_blank" style="color: var(--accent-emerald);">GitHub</a></p>
+                <p style="text-align: left; margin-bottom: 0.5rem; font-size: 0.9rem;"><strong style="color: var(--accent-blue);">License:</strong> Distributed under the MIT License. Feel free to use, modify, and share.</p>
+                <p style="text-align: left; margin-bottom: 0; font-size: 0.82rem; font-style: italic; color: var(--text-muted);">Developed for the sustainable mobility community. If you find this tool helpful, please leave a ⭐ on GitHub!</p>
             </div>
         </div>
 
@@ -1277,7 +1292,6 @@ select {
                 <button class="tab-btn" data-tab="co2">CO₂</button>
                 <button class="tab-btn" data-tab="triplog">Log</button>
                 <button class="tab-btn" data-tab="quick-calc">Calc</button>
-                <button class="tab-btn" data-tab="about">About</button>
             </div>
 
             <div class="tab-content-container">
@@ -1576,18 +1590,6 @@ select {
                     </div>
                 </div>
 
-                <!-- ── ABOUT ── -->
-                <div id="tab-about" class="tab-content">
-                    <div class="card">
-                        <h3 class="stats-header" style="border:none; padding-top:0; margin-bottom: 1.5rem;">About EV Master</h3>
-                        <p style="text-align: left; margin-bottom: 0.5rem;"><strong style="color: var(--accent-blue);">Synopsis:</strong> A simple but effective web-based calculator designed for BEV owners</p>
-                        <p style="text-align: left; margin-bottom: 0.5rem;"><strong style="color: var(--accent-blue);">Author:</strong> Gianfranco Piazzolla</p>
-                        <p style="text-align: left; margin-bottom: 0.5rem;"><strong style="color: var(--accent-blue);">GitHub repository:</strong> <a href="https://github.com/GianfrancoPiazzolla/EV-Master" target="_blank" style="color: var(--accent-emerald);">EV Master</a></p>
-                        <p style="text-align: left; margin-bottom: 0.5rem;"><strong style="color: var(--accent-blue);">More Apps:</strong> <a href="https://github.com/GianfrancoPiazzolla" target="_blank" style="color: var(--accent-emerald);">GitHub</a></p>
-                        <p style="text-align: left; margin-bottom: 0;"><strong style="color: var(--accent-blue);">License:</strong> Distributed under the MIT License. Feel free to use, modify, and share.</p>
-                        <p style="text-align: left; margin-bottom: 0; font-size: 14px; font-style: italic;">Developed for the sustainable mobility community. If you find this tool helpful, please leave a ⭐ on GitHub!</p>
-                    </div>
-                </div>
 
             </div>
         </main>
@@ -2516,6 +2518,17 @@ document.addEventListener('DOMContentLoaded', () => {
             if (clickedTab.dataset.tab === 'speed-range') setTimeout(drawSpeedChart, 50);
         });
     };
+
+    // ── ABOUT MODAL ──
+    document.getElementById('openAboutBtn').addEventListener('click', () => {
+        document.getElementById('aboutModal').classList.add('open');
+    });
+    document.getElementById('closeAboutBtn').addEventListener('click', () => {
+        document.getElementById('aboutModal').classList.remove('open');
+    });
+    document.getElementById('aboutModal').addEventListener('click', (e) => {
+        if (e.target === document.getElementById('aboutModal')) document.getElementById('aboutModal').classList.remove('open');
+    });
 
     // ── INIT ──
     loadState();
