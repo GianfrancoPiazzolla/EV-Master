@@ -1458,8 +1458,6 @@ select {
                             <div class="input-wrapper"><input type="number" id="transferEfficiency" value="95" min="70" max="100" step="1"><span>%</span></div>
                         <input type="range" id="transferEfficiencyRange" value="95" min="70" max="100" step="1">
                         </div>
-                        <!-- Charge rate badge injected here -->
-                        <div id="charge-rate-badge-wrap" style="margin-top:0.75rem;"></div>
                         <div id="charging-calculator-results" class="details-grid" style="margin-top: 1.5rem;"></div>
                     </div>
                 </div>
@@ -2259,18 +2257,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const updateChargingCalculatorUI = () => {
         const res = calculateCharging();
-        const badgeWrap = document.getElementById('charge-rate-badge-wrap');
         if (res) {
-            if (badgeWrap) badgeWrap.innerHTML = `<span class="charge-badge">⚡ ${res.pctPerHour} % / hour @ ${state.chargePower} kW</span>`;
             DOMElements.results.charging.innerHTML = `
                 <div class="details-item"><p class="label">Energy added</p><p class="value green">${res.kwhAdded} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Energy drawn</p><p class="value yellow">${res.kwhTransferred} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Charging cost</p><p class="value purple">${res.chargedCost} <span class="unit">€</span></p></div>
                 <div class="details-item"><p class="label">Withdrawal cost</p><p class="value red">${res.transferredCost} <span class="unit">€</span></p></div>
-                <div class="details-item"><p class="label">Charging time</p><p class="value blue">${res.time}</p></div>`;
+                <div class="details-item"><p class="label">Charging time</p><p class="value blue">${res.time}</p></div>
+                <div class="details-item"><p class="label">Charge rate</p><p class="value blue">${res.pctPerHour} <span class="unit">%/hour</span></p></div>`;
             applyBorderColors('charging-calculator-results');
         } else {
-            if (badgeWrap) badgeWrap.innerHTML = '';
             DOMElements.results.charging.innerHTML = `<div class="no-results" style="grid-column: 1 / -1;"><p>Enter valid data (Target % > Start %)</p></div>`;
         }
     };
