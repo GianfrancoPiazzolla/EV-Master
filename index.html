@@ -1825,6 +1825,8 @@ document.addEventListener('DOMContentLoaded', () => {
             iceEquivalentKm: (fuelPrice > 0 && fuelConsumption > 0) ? (tripCost / fuelPrice) * fuelConsumption : 0,
             equivalentEfficiency: (kwhPrice > 0 && isFinite(efficiencyKmKwh)) ? (fuelPrice / kwhPrice) * efficiencyKmKwh : 0,
             equivalentIceCostPerKwh: (fuelConsumption > 0 && efficiencyKmKwh > 0) ? (fuelPrice / fuelConsumption) * efficiencyKmKwh : 0,
+            iceRefuelCost: (fuelPrice > 0 && fuelConsumption > 0) ? (kilometersTraveled / fuelConsumption) * fuelPrice : 0,
+            bevVsIceCostGain: (fuelPrice > 0 && fuelConsumption > 0) ? ((kilometersTraveled / fuelConsumption) * fuelPrice) - tripCost : 0,
             fullRangeReal, wltpRatio, kilometersTraveled,
         };
     };
@@ -2035,6 +2037,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="details-item"><p class="label">Overall driving cost per Km</p><p class="value yellow">${fmt(res.costPerKm, 3)} <span class="unit">€/Km</span></p></div>
                 <div class="details-item"><p class="label">Equivalent ICE efficiency</p><p class="value purple">${fmt(res.equivalentEfficiency, 1)} <span class="unit">Km/L</span></p></div>
                 <div class="details-item"><p class="label">Equivalent ICE traveling cost</p><p class="value purple">${fmt(res.equivalentIceCostPerKwh)} <span class="unit">€/kWh</span></p></div>
+                <div class="details-item"><p class="label">Equivalent ICE refuel cost</p><p class="value purple">${fmt(res.iceRefuelCost)} <span class="unit">€</span></p></div>
+                <div class="details-item"><p class="label">BEV vs ICE cost gain</p><p class="value purple">${fmt(res.bevVsIceCostGain)} <span class="unit">€</span></p></div>
                 <div class="details-item"><p class="label">Equivalent ICE distance</p><p class="value purple">${fmt(res.iceEquivalentKm, 1)} <span class="unit">Km</span></p></div>
                 <div class="details-item"><p class="label">Residual energy at minimum SoC</p><p class="value green">${fmt(res.energyAtMinBuffer)} <span class="unit">kWh</span></p></div>
                 <div class="details-item"><p class="label">Projected full charge range</p><p class="value green">${fmt(res.fullRangeReal, 0)} <span class="unit">Km</span></p></div>
@@ -2480,21 +2484,29 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('exportSummaryBtn').addEventListener('click', () => {
         const res = calculateMainResults();
         if (!res) { alert('No data to export.'); return; }
+        const wltpRatioLine = res.wltpRatio !== null ? `Real vs WLTP ratio: ${fmt(res.wltpRatio, 1)} %` : null;
         const lines = [
-            `EV Master — Trip Summary (${new Date().toLocaleDateString('en-GB')})`,
+            `EV Master — Travel and Consumption Statistics (${new Date().toLocaleDateString('en-GB')})`,
             `─────────────────────────────────────`,
             `Distance: ${state.kilometersTraveled} Km`,
             `SoC used: ${state.startBattery}% → ${state.currentBattery}%`,
             `Battery capacity: ${state.batteryCapacity} kWh`,
-            `Consumption: ${fmt(res.consumptionKwh100km)} kWh/100Km`,
-            `Efficiency: ${fmt(res.efficiencyKmKwh)} Km/kWh`,
-            `Energy used: ${fmt(res.energyUsedKwh)} kWh`,
-            `Trip cost: ${fmt(res.tripCost)} € (@ ${state.kwhPrice} €/kWh)`,
-            `Cost/Km: ${fmt(res.costPerKm, 3)} €/Km`,
-            `Remaining range: ~${Math.round(res.remainingRange)} Km`,
-            `Projected full-range: ~${fmt(res.fullRangeReal, 0)} Km`,
-            `Equivalent ICE efficiency: ${fmt(res.equivalentEfficiency, 1)} Lm/L`,
-        ].join('\n');
+            `─────────────────────────────────────`,
+            `Overall driving consumption: ${fmt(res.consumptionKwh100km)} kWh/100Km`,
+            `Overall energy consumed: ${fmt(res.energyUsedKwh)} kWh`,
+            `Overall driving efficiency: ${fmt(res.efficiencyKmKwh)} Km/kWh`,
+            `Traveled Km per battery %: ${fmt(res.kmPerPercent)} Km`,
+            `Overall driving cost: ${fmt(res.tripCost)} € (@ ${state.kwhPrice} €/kWh)`,
+            `Overall driving cost per Km: ${fmt(res.costPerKm, 3)} €/Km`,
+            `Equivalent ICE efficiency: ${fmt(res.equivalentEfficiency, 1)} Km/L`,
+            `Equivalent ICE traveling cost: ${fmt(res.equivalentIceCostPerKwh)} (@ ${state.fuelPrice} €/L)`,
+            `Equivalent ICE refuel cost: ${fmt(res.iceRefuelCost)} €`,
+            `BEV vs ICE cost gain: ${fmt(res.bevVsIceCostGain)} €`,
+            `Equivalent ICE distance: ${fmt(res.iceEquivalentKm, 1)} Km`,
+            `Residual energy at minimum SoC: ${fmt(res.energyAtMinBuffer)} kWh`,
+            `Projected full charge range: ${fmt(res.fullRangeReal, 0)} Km`,
+            wltpRatioLine,
+        ].filter(Boolean).join('\n');
         navigator.clipboard.writeText(lines).then(() => {
             const btn = document.getElementById('exportSummaryBtn');
             btn.textContent = '✅ Copied!';
