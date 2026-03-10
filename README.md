@@ -208,7 +208,6 @@ pctPerHour     = (chargePower × efficiency / batteryCapacity) × 100
 - 💰 Net charging cost (€)
 - 💸 Gross charging cost (€, including losses)
 - 📈 Charge rate (% SoC per hour)
-- 🏷️ Charger type badge (Slow / Fast / Rapid / Ultra-rapid) — automatically inferred from power level
 
 > ℹ️ Note: Assumes a **linear charging curve**. Real-world charging slows above ~80% SoC on most vehicles.
 
