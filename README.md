@@ -130,6 +130,12 @@ Computed values shown:
 
 - **📍 Km per % SoC** — Granular consumption indicator
 
+- **⛽ Equivalent ICE refuel cost** — The total petrol cost an ICE vehicle would incur to cover the same distance:  
+  `iceRefuelCost = (kilometersTraveled / fuelConsumption) × fuelPrice`
+
+- **💚 BEV vs ICE cost gain** — The monetary saving achieved by driving electric instead of the reference ICE vehicle:  
+  `bevVsIceCostGain = iceRefuelCost - tripCost`
+
 A **📋 Copy Summary** button exports all key metrics as a formatted plain-text block directly to the clipboard for easy sharing.
 
 ---
