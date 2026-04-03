@@ -2213,16 +2213,16 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="ad-val" style="color:var(--accent-red)">${fmt(res.consumptionKwh100km)} <span class="ad-unit">kWh/100Km</span></p>
                 </div>
                 <div class="autonomy-detail-item">
-                    <p class="ad-label">Efficiency</p>
-                    <p class="ad-val" style="color:var(--accent-amber)">${fmt(whPerKm,0)} <span class="ad-unit">Wh/Km</span></p>
+                    <p class="ad-label">Time to empty</p>
+                    <p class="ad-val" style="color:var(--accent-purple)">${tteStr}</p>
+                </div>
+                <div class="autonomy-detail-item">
+                    <p class="ad-label">Km per kWh</p>
+                    <p class="ad-val" style="color:var(--accent-amber)">${fmt(res.efficiencyKmKwh)} <span class="ad-unit">Wh/Km</span></p>
                 </div>
                 <div class="autonomy-detail-item">
                     <p class="ad-label">Km per battery %</p>
-                    <p class="ad-val" style="color:var(--accent-red)">${fmt(res.kmPerPercent)} <span class="ad-unit">Km</span></p>
-                </div>
-                <div class="autonomy-detail-item">
-                    <p class="ad-label">Time to empty</p>
-                    <p class="ad-val" style="color:var(--accent-purple)">${tteStr}</p>
+                    <p class="ad-val" style="color:var(--accent-amber)">${fmt(res.kmPerPercent)} <span class="ad-unit">Km</span></p>
                 </div>
                 <div class="autonomy-detail-item">
                     <p class="ad-label">Full range</p>
