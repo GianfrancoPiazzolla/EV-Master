@@ -27,9 +27,11 @@
   - [🧮 Quick Calculator Tab](#-quick-calculator-tab)
 - [🚗 Vehicle Presets](#-vehicle-presets)
 - [🌗 Theme System](#-theme-system)
-- [💾 Persistence & Storage](#-persistence--storage)
 - [📱 Progressive Web App (PWA)](#-progressive-web-app-pwa)
+- [💾 Persistence & Storage](#-persistence--storage)
 - [⚙️ Technical Architecture](#️-technical-architecture)
+- [ℹ️ About Modal](#ℹ️-about-modal)
+- [📋 Export Summary](#-export-summary)
 - [🚀 Getting Started](#-getting-started)
 - [📜 License](#-license)
 
@@ -48,19 +50,24 @@ All data is persisted locally in the browser via `localStorage`, so your vehicle
 | 🏷️ Feature | 📝 Description |
 |---|---|
 | 📊 **Real Consumption Stats** | Calculates true kWh/100Km from actual SoC delta and distance |
-| 🔋 **Animated Battery Visual** | Live graphical battery bar with buffer and start markers |
+| 🔵 **SoC Ring Gauge** | SVG circular ring with gradient, glow, tick marks & kWh label |
+| 🔋 **Realistic Battery Bar** | 5-zone color gradients, cell dividers, tick marks, animated glow |
+| 🚗 **Speed Range Pills** | 6 mini-cards showing projected range at different speeds |
+| 🏆 **Hero Range Display** | 5rem monospace value with WLTP ratio badge |
 | 🗺️ **Trip Estimator** | Projects future trip cost/SoC using temperature, speed & HVAC factors |
 | ⚡ **Charging Calculator** | Estimates time and cost for any SoC target and charger power |
 | 🏎️ **Speed vs Range Chart** | Canvas-drawn aerodynamic drag curve across speed intervals |
 | 🏷️ **SoH Estimator** | Calculates State of Health from measured vs WLTP range with arc gauge |
-| 🌿 **CO₂ Comparison** | Computes EV vs ICE emissions using configurable grid intensity |
+| 🤖 **Auto SoH Logging** | Automatic deduped entries with 4 health status labels |
+| 🌿 **CO₂ Comparison** | Computes EV vs ICE emissions with dynamic color progress bar |
 | 📍 **Trip Log** | Persistent history of up to 50 logged trips with averages |
-| 🧮 **Quick Calculator** | Standalone calculator with history tape and SoC↔Km converter |
-| 🚗 **Vehicle Presets** | Save/load named vehicle profiles (capacity, WLTP range, ICE reference) |
+| 🧮 **Quick Calculator** | Standalone calculator with visual operators, history tape & SoC↔Km converter |
+| 👤 **Vehicle Profiles** | Modal UI with 9 stored parameters per profile |
 | 🌗 **Dark / Light Theme** | Full theme switcher with smooth CSS transitions |
 | 📱 **PWA Support** | Installable on mobile home screen via Web App Manifest + Service Worker |
 | 💾 **Local Persistence** | All state auto-saved to `localStorage`; zero data leaves the device |
-| 📋 **Export Summary** | One-click clipboard copy of a full trip summary as plain text |
+| 📋 **Export Summary** | One-click clipboard copy with ✅ confirmation feedback |
+| ℹ️ **About Modal** | Quick-reference panel with author, repo, and license info |
 
 ---
 
@@ -142,18 +149,49 @@ A **📋 Copy Summary** button exports all key metrics as a formatted plain-text
 
 ### 🔋 Autonomy Tab
 
-The **Autonomy** tab provides a visual and numerical representation of the current battery status.
+The **Autonomy** tab provides a rich visual and numerical representation of the current battery status, featuring multiple complementary displays.
 
-**🎨 Animated Battery Visual:**
-- A horizontal battery widget fills proportionally to the current SoC percentage
-- The fill color transitions dynamically: **green** (>30%) → **amber** (15–30%) → **red** (<15%)
-- A **red dashed vertical marker** (`Buffer`) shows where the minimum SoC threshold is
-- A **blue dashed vertical marker** (`Start`) shows where the drive started
-- A large percentage label below updates in real time
+**🔵 SoC Ring (Circular Gauge):**
+- An SVG circular ring fills proportionally to the current SoC percentage (75% of circumference used for the 0–100% range)
+- Gradient fill transitions dynamically: **green→blue** (>20%) → **amber** (15–20%) → **red** (<15% or below buffer)
+- SVG glow filter with animated `drop-shadow` matching the current state color
+- Center text displays the large **SoC %** in monospace font with a **"State of Charge"** subtitle
+- A small **kWh label** below the center text shows the current energy content in real time
+- Tick marks at 25%, 50%, and 75% positions around the ring
 
-**📐 Residual Autonomy Figures:**
-- Displays the main remaining range figure prominently in large typography
-- Shows the usable remaining SoC percentage (current minus buffer)
+**🔋 Horizontal Battery Bar:**
+- A realistic battery-shaped widget with a positive terminal nub on the right side
+- Fill color transitions with 5 zones: **blue→green** (>50%) → **green** (20–50%) → **amber** (15–20%) → **red** (<15% or below buffer)
+- Animated glow pulse on the fill edge (`battPulse` keyframe, 2s infinite cycle)
+- Sheen overlay on the top 45% for a glass-like effect
+- **Cell dividers** at every 10% interval (9 vertical lines)
+- **Tick marks** every 5% with major ticks (taller, bolder) at 25%, 50%, 75% with numeric labels
+- A **red vertical marker** (`Buffer`) with a dot shows where the minimum SoC threshold is
+- A **blue vertical marker** (`Start`) with a dot shows where the drive started
+- A legend below the bar shows: `0%` · `Buffer` · `50%` · `Start` · `100%`
+
+**🚗 Speed Range Mini-Pills:**
+- A row of 6 compact pills showing estimated range at different speeds: **30, 50, 70, 90, 110, 130 Km/h**
+- Each pill displays the speed label, projected range value, and `Km` unit
+- Pills highlight on hover with accent blue border
+- Data derived from the aerodynamic drag model (v² scaling with 30% rolling resistance blend)
+
+**🏆 Hero Display:**
+- The remaining range is shown in **5rem bold monospace** typography with a color-coded value: **green** (≥100 Km) → **amber** (50–100 Km) → **red** (<50 Km)
+- A **WLTP ratio badge** (pill-shaped) appears next to the hero value showing the Real vs WLTP percentage with color coding: **green** (≥80%) → **amber** (60–80%) → **red** (<60%)
+
+**📐 Autonomy Detail Grid:**
+- **⚡ Usable energy** — kWh available above the buffer reserve
+- **🔋 Total energy** — total kWh currently in the battery
+- **📊 Consumption** — real-world efficiency in kWh/100Km
+- **⏱️ Time to empty** — estimated driving time until battery depletion at the current average speed (from Trip Estimator inputs, defaults to 90 Km/h)
+- **🔌 Km per kWh** — displayed as Wh/Km for granular efficiency
+- **📍 Km per battery %** — distance covered per 1% SoC
+- **🗺️ Full range** — projected range at 100% SoC
+- **🛡️ Buffer reserve** — kWh stored below the minimum SoC threshold
+
+**🔋 Charged Indicator Strip:**
+- A thin 5px progress bar below the battery visuals fills proportionally to the current SoC with matching color transitions
 
 ---
 
@@ -240,13 +278,24 @@ SoH = (measuredRange / wltpRange) × 100%
 
 **🎨 Arc Gauge Visual:**
 - An SVG semi-circular arc gauge fills from 0% to the computed SoH
-- Color transitions: 🟢 green (>80%), 🟡 amber (60–80%), 🔴 red (<60%)
+- Color transitions: 🟢 green (≥85%), 🟡 amber (70–85%), 🔴 red (<70%)
 - Smooth animated transition on value change
 
+**🏷️ Health Status Labels:**
+- **🟢 Excellent** — SoH ≥ 90%
+- **🟡 Good** — SoH ≥ 80%
+- **🟠 Fair** — SoH ≥ 70%
+- **🔴 Degraded** — SoH < 70%
+
+**🤖 Auto-Logging:**
+- SoH entries are **automatically appended** to the session log every time the health is computed
+- Entries are **deduplicated** by date + value to prevent duplicate entries on the same day
+- Maximum **30 entries** — oldest entries are automatically removed when the cap is reached
+- Each entry records: 📅 date, 📏 measured range, and 📊 SoH %
+
 **📋 SoH Session Log:**
-- Each time SoH is computed, a session entry is saved with the **date**, **measured range**, and **SoH %**
-- Log entries persist across sessions via `localStorage`
-- A 🗑️ **Clear Log** button wipes the history after confirmation
+- All log entries listed in reverse chronological order (newest first)
+- A 🗑️ **Clear Log** button wipes the entire history after confirmation dialog
 
 ---
 
@@ -268,6 +317,10 @@ co2SavedPct  = (co2Saved / iceCO2Trip) × 100
 - 🌿 CO₂ saved vs ICE (g, kg, and percentage)
 - 📊 EV CO₂ per Km (g/Km)
 
+**🎨 Dynamic Progress Bar:**
+- A visual progress bar shows the CO₂ saving percentage with color transitions: **green** (>60%) → **amber** (30–60%) → **red** (<30%)
+- The bar width is clamped between 0% and 100% for visual accuracy
+
 > 💡 The result adapts to your local electricity grid: a coal-heavy grid will show less savings than a renewable-heavy one. You can customise the `Grid CO₂ intensity` field in the main panel.
 
 ---
@@ -280,12 +333,12 @@ The **Trip Log** provides persistent historical tracking of your drives.
 - Click **📍 Log Current Trip** to save the current calculator state as a timestamped entry
 - Each entry records: 📅 date/time, 📏 distance (Km), ⚡ consumption (kWh/100Km), 💰 trip cost (€)
 - The log holds up to **50 entries** (oldest automatically removed when the cap is reached)
-- The app automatically switches to the Trip Log tab after logging
+- The app **automatically switches to the Trip Log tab** after logging a trip
 
 **Log Display:**
 - All entries listed in reverse chronological order (newest first)
 - Each entry has a ✕ **delete button** to remove individual records
-- When 2+ entries exist, an **averages summary** is shown below the list:
+- When **2+ entries exist**, an **averages summary** is shown below the list:
   - 📏 Total Km logged (sum)
   - ⚡ Average consumption (mean kWh/100Km)
   - 🔢 Number of trips logged
@@ -296,18 +349,24 @@ The **Trip Log** provides persistent historical tracking of your drives.
 
 An always-available **standalone calculator** embedded within the app for ad-hoc arithmetic while planning your drives.
 
+**🎨 Display:**
+- **Dual-line display**: operation history shown above in muted text, current value shown below in large bold font
+- **Visual operators**: `×` for multiply and `÷` for divide with automatic spacing for readability
+- Automatic spacing around `+` and `−` operators
+
 **Calculator Features:**
 - Standard 4-function arithmetic: `+`, `−`, `×`, `÷`
 - Parentheses support for complex expressions: `(`, `)`
 - Decimal point input
 - `C` (clear all) and `←` (backspace/delete last character) keys
 - Supports chaining operations (result becomes input for next operation)
-- Error handling for invalid expressions
+- Error handling for invalid expressions (displays "Error")
 
 **📜 History Tape:**
 - Every completed calculation is appended to a scrollable **history tape** on the right
-- Each entry shows the full expression and its result
+- Each entry shows the full expression and its result in green
 - History is session-only (not persisted to `localStorage`)
+- Entries are prepended (newest at top) via `flex-direction: column-reverse`
 
 **⚡ SoC ↔ Km Converter (bonus tool):**
 A two-way live converter embedded below the calculator:
@@ -324,15 +383,28 @@ A two-way live converter embedded below the calculator:
 
 Vehicle profiles allow you to switch between multiple EVs (or configurations) instantly without re-entering data.
 
-**Each preset stores:**
+**🎭 Modal UI:**
+- Accessed via the **👤** button in the header
+- Modal overlay with backdrop blur (`8px`) and dark semi-transparent background
+- Scrollable profile list with custom scrollbar styling
+- Click outside the modal to close
+- Each profile card shows: name, and all stored parameters in detail
+
+**Each preset stores 9 parameters:**
 - 🔋 Usable battery capacity (kWh)
 - 📄 WLTP rated range (Km)
-- ⛽ ICE reference fuel consumption (Km/L) — for cost/CO₂ comparisons
+- ⛽ ICE reference fuel consumption (Km/L)
+- 🌗 Theme preference (dark/light)
+- 💶 Electricity price (€/kWh)
+- ⛽ Fuel price (€/L)
+- 🌫️ Grid CO₂ intensity (g/kWh)
+- 💨 ICE CO₂ emissions (g/Km)
 
 **Operations:**
-- **💾 Save** — prompts for a name and saves the current values as a new named profile
-- **📂 Load** — select a preset from the dropdown to instantly apply its values and recompute all tabs
-- **🗑️ Delete** — removes the selected preset after confirmation
+- **💾 Save** — enter a name (max 40 chars) and save the current configuration as a new named profile
+- **📂 Load** — click the Load button on any profile to instantly apply all its values and recompute all tabs (triggers page reload for clean state)
+- **✕ Delete** — removes the selected preset after confirmation
+- HTML-escaped output to prevent XSS in profile names
 
 Presets are persisted in `localStorage` along with the rest of the application state.
 
@@ -358,6 +430,19 @@ EV Master supports both **dark** and **light** themes with smooth animated trans
 
 ---
 
+## 📱 Progressive Web App (PWA)
+
+EV Master is configured as a **fully installable PWA**:
+
+- **`manifest.json`** — defines app name (`EV Master`), icons (192×192 and larger), theme color (`#000000`), display mode, and start URL
+- **`sw.js`** — a Service Worker is registered on page load for offline caching support
+- **Meta tags** — includes `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`, and `mobile-web-app-capable` for full-screen experience on iOS and Android
+- **`favicon.ico`** and **`icon-192x192.png`** — app icons for home screen and browser tab
+
+To install on mobile: open the URL in your browser → tap **"Add to Home Screen"** → launch as a standalone app.
+
+---
+
 ## 💾 Persistence & Storage
 
 All application state is automatically saved to **`localStorage`** under the key `evMasterState` as a JSON object. This includes:
@@ -380,19 +465,6 @@ State is saved on **every input change** — no manual save button required.
 
 ---
 
-## 📱 Progressive Web App (PWA)
-
-EV Master is configured as a **fully installable PWA**:
-
-- **`manifest.json`** — defines app name (`EV Master`), icons (192×192 and larger), theme color (`#000000`), display mode, and start URL
-- **`sw.js`** — a Service Worker is registered on page load for offline caching support
-- **Meta tags** — includes `apple-mobile-web-app-capable`, `apple-mobile-web-app-status-bar-style`, and `mobile-web-app-capable` for full-screen experience on iOS and Android
-- **`favicon.ico`** and **`icon-192x192.png`** — app icons for home screen and browser tab
-
-To install on mobile: open the URL in your browser → tap **"Add to Home Screen"** → launch as a standalone app.
-
----
-
 ## ⚙️ Technical Architecture
 
 | 🏷️ Aspect | 📝 Details |
@@ -406,6 +478,51 @@ To install on mobile: open the URL in your browser → tap **"Add to Home Screen
 | 📱 **PWA** | Web App Manifest + Service Worker registration |
 | ♿ **Inputs** | All numeric fields are paired with `<input type="range">` sliders, synced bidirectionally |
 | 🔄 **State** | Single `state` object; any change triggers a full `updateUI()` re-render cycle |
+
+---
+
+## ℹ️ About Modal
+
+A quick-reference information panel accessible from the header.
+
+**📍 Access:**
+- Click the **⭐** button in the top-right corner of the header (next to the theme toggle)
+
+**📋 Contents:**
+- **📝 Synopsis** — Brief description of the app's purpose
+- **👤 Author** — Gianfranco Piazzolla
+- **🔗 GitHub Repository** — Direct link to the EV Master repository
+- **💻 More Apps** — Link to the author's GitHub profile
+- **📜 License** — MIT License summary
+- **🌱 Community note** — Encouragement to leave a star on GitHub
+
+**🎭 UI Behavior:**
+- Modal overlay with backdrop blur (`8px`) and dark semi-transparent background
+- Close via the **×** button or by clicking outside the modal box
+- Styled with rounded corners, shadow, and accent-colored links
+
+---
+
+## 📋 Export Summary
+
+A one-click clipboard export of all key trip metrics.
+
+**📍 Access:**
+- Click the **📋 Copy Summary** button in the Stats tab
+
+**📦 Exported Data:**
+- App name and export date
+- Distance, SoC range (start → current), battery capacity
+- Consumption, energy used, efficiency, Km per %
+- Trip cost, cost per Km, electricity price
+- Equivalent ICE efficiency, ICE traveling cost, ICE refuel cost
+- BEV vs ICE cost gain, equivalent ICE distance
+- Residual energy at minimum SoC, projected full charge range
+- Real vs WLTP ratio (if available)
+
+**✅ Feedback:**
+- On successful copy: button text changes to **"✅ Copied!"** for 2 seconds, then reverts
+- If clipboard API fails: falls back to displaying the full summary in an `alert()` dialog
 
 ---
 
