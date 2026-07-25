@@ -1,12 +1,17 @@
+<div align="center">
+
 # ⚡ EV Master
 
-> **A simple but powerful web-based calculator designed for Battery Electric Vehicle (BEV) owners.**  
-> No backend, no installation, no account — just open and use.
+**A simple but powerful web-based calculator designed for Battery Electric Vehicle (BEV) owners.**  
+No backend, no installation, no account — just open and use.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![PWA Ready](https://img.shields.io/badge/PWA-Ready-brightgreen)](https://web.dev/progressive-web-apps/)
 [![HTML5](https://img.shields.io/badge/HTML5-Single--File-orange)](https://developer.mozilla.org/en-US/docs/Web/HTML)
 [![No dependencies](https://img.shields.io/badge/dependencies-none-blue)]()
+
+https://ev-master.vercel.app/
+</div>
 
 ---
 
